@@ -130,13 +130,15 @@ class DealerDashboardScreen extends ConsumerWidget {
                                         AnimatedMetric(
                                           value: data.hotLeadsCount,
                                           style: theme.textTheme.displaySmall?.copyWith(
-                                            fontSize: 52,
+                                            fontSize: 34,
                                             fontWeight: FontWeight.w700,
                                             color: AppColors.ink,
                                           ),
                                         ),
                                         Text(
                                           'hot AI leads ready to close',
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
                                           style: theme.textTheme.bodySmall,
                                         ),
                                       ],

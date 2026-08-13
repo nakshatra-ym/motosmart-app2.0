@@ -276,8 +276,8 @@ class MotospotMark extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: AppColors.ink,
                 fontWeight: FontWeight.w700,
-                letterSpacing: -0.4,
-                fontSize: compact ? 24 : 30,
+                letterSpacing: -0.3,
+                fontSize: compact ? 22 : 26,
               ),
         ),
         const SizedBox(height: 8),

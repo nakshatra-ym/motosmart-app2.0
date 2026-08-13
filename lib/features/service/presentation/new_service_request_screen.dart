@@ -146,10 +146,12 @@ class _NewServiceRequestScreenState extends ConsumerState<NewServiceRequestScree
               if (widget.args.obdContext != null) ...[
                 const SizedBox(height: 14),
                 Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppColors.surfaceMuted,
                     borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.border),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,16 +160,27 @@ class _NewServiceRequestScreenState extends ConsumerState<NewServiceRequestScree
                         children: [
                           Icon(Icons.memory, size: 16, color: AppColors.inkMuted),
                           SizedBox(width: 6),
-                          Text(
-                            'Diagnostics attached',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          Expanded(
+                            child: Text(
+                              'Diagnostics attached',
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Text(
-                        widget.args.obdContext!,
-                        style: const TextStyle(fontSize: 11, color: AppColors.inkMuted),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 140),
+                        child: SingleChildScrollView(
+                          child: SelectableText(
+                            widget.args.obdContext!,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.inkMuted,
+                              height: 1.35,
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
