@@ -1,0 +1,40 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/auth/auth_controller.dart';
+import '../../../data/mock/mock_providers.dart';
+import '../../../data/mock/mock_tickets_repository.dart';
+import '../../../models/service_message.dart';
+import '../../../models/service_request.dart';
+import 'tickets_repository.dart';
+
+final ticketsRepositoryProvider = Provider<TicketsRepository>((ref) {
+  return MockTicketsRepository(
+    ref.watch(mockDataStoreProvider),
+    currentDealerId: () =>
+        ref.read(authControllerProvider).valueOrNull?.employee?.dealerId ?? '',
+  );
+});
+
+final ticketsListProvider = FutureProvider.autoDispose<List<ServiceRequest>>((ref) async {
+  return ref.watch(ticketsRepositoryProvider).listTickets();
+});
+
+final ticketDetailProvider =
+    FutureProvider.autoDispose.family<ServiceRequest, String>((ref, id) async {
+  return ref.watch(ticketsRepositoryProvider).getTicket(id);
+});
+
+final ticketMessagesProvider =
+    FutureProvider.autoDispose.family<List<ServiceMessage>, String>((ref, ticketId) async {
+  return ref.watch(ticketsRepositoryProvider).listMessages(ticketId);
+});
+
+/// Call after any mutation (status change, new message) so the list, detail,
+/// and thread all reflect it immediately.
+void invalidateTicketsData(WidgetRef ref, {String? ticketId}) {
+  ref.invalidate(ticketsListProvider);
+  if (ticketId != null) {
+    ref.invalidate(ticketDetailProvider(ticketId));
+    ref.invalidate(ticketMessagesProvider(ticketId));
+  }
+}

@@ -1,0 +1,53 @@
+# Flutter / Dart build outputs
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+
+# Dependencies and lock files (Optional: keep pubspec.lock if building an app, ignore if a package)
+# pubspec.lock
+
+# Android build & local settings
+android/.gradle/
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/local.properties
+android/key.properties
+*.keystore
+
+# iOS / macOS build & local settings
+ios/Runner/GeneratedPluginRegistrant.*
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/app.flt*
+ios/.symlinks/
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+
+# Web build artifacts
+web/flutter_bootstrap.js
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# AI Assistant local configs
+.claude/
+
+# IDE/Project specific metadata
+.metadata
+
+# Logs and OS generated files
+*.log
+.DS_Store
+Thumbs.db
