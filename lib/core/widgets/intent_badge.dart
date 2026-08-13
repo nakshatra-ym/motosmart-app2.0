@@ -69,7 +69,6 @@ class UnclassifiedBadge extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surfaceMuted,
           borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: AppColors.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

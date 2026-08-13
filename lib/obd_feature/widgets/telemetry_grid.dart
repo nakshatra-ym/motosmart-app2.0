@@ -10,9 +10,7 @@ class TelemetryGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    final crossAxisCount = width < 360 ? 2 : 3;
-
+    final theme = Theme.of(context);
     final items = [
       _TelemetryItem('RPM', reading.rpm.toString(), Icons.speed),
       _TelemetryItem('Speed', '${reading.speedKph.toStringAsFixed(0)} km/h', Icons.directions_bike),
@@ -34,47 +32,57 @@ class TelemetryGrid extends StatelessWidget {
       _TelemetryItem('Fuel', '${reading.fuelLevelPct.toStringAsFixed(0)}%', Icons.local_gas_station),
     ];
 
-    return GridView.count(
-      crossAxisCount: crossAxisCount,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 8,
-      crossAxisSpacing: 8,
-      childAspectRatio: crossAxisCount == 2 ? 1.35 : 1.1,
-      children: items.map((i) => _card(context, i)).toList(),
+    return Column(
+      children: [
+        for (var i = 0; i < items.length; i += 2) ...[
+          if (i > 0) Divider(height: 1, color: Colors.white.withValues(alpha: 0.07)),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: Row(
+              children: [
+                Expanded(child: _metric(theme, items[i])),
+                Container(
+                  width: 1,
+                  height: 44,
+                  color: Colors.white.withValues(alpha: 0.07),
+                ),
+                Expanded(
+                  child: i + 1 < items.length
+                      ? _metric(theme, items[i + 1])
+                      : const SizedBox.shrink(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 
-  Widget _card(BuildContext context, _TelemetryItem item) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.glassBorder),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+  Widget _metric(ThemeData theme, _TelemetryItem item) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
         children: [
           Icon(item.icon, size: 18, color: AppColors.yamahaBlue),
-          const SizedBox(height: 6),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              item.value,
-              maxLines: 1,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item.label, style: theme.textTheme.labelSmall),
+                const SizedBox(height: 2),
+                Text(
+                  item.value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: AppColors.ink,
                   ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            item.label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.labelSmall,
           ),
         ],
       ),

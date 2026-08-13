@@ -78,7 +78,14 @@ class _Blob extends StatelessWidget {
   }
 }
 
-/// Frosted glass panel — Aceternity / Magic UI feel in Flutter.
+/// Frosted surface — soft by default so screens don’t feel like stacked boxes.
+enum GlassStyle {
+  /// Wash + blur, no hard outline (default).
+  soft,
+  /// Slight edge for a single hero focal point.
+  framed,
+}
+
 class GlassPanel extends StatelessWidget {
   const GlassPanel({
     super.key,
@@ -87,6 +94,7 @@ class GlassPanel extends StatelessWidget {
     this.borderRadius,
     this.glow,
     this.onTap,
+    this.style = GlassStyle.soft,
   });
 
   final Widget child;
@@ -94,35 +102,45 @@ class GlassPanel extends StatelessWidget {
   final BorderRadius? borderRadius;
   final Color? glow;
   final VoidCallback? onTap;
+  final GlassStyle style;
 
   @override
   Widget build(BuildContext context) {
     final radius = borderRadius ?? BorderRadius.circular(AppTheme.radiusLg);
+    final framed = style == GlassStyle.framed;
 
     Widget panel = ClipRRect(
       borderRadius: radius,
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+        filter: ImageFilter.blur(sigmaX: framed ? 18 : 12, sigmaY: framed ? 18 : 12),
         child: DecoratedBox(
           decoration: BoxDecoration(
             borderRadius: radius,
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withValues(alpha: 0.10),
-                Colors.white.withValues(alpha: 0.04),
-              ],
+              colors: framed
+                  ? [
+                      Colors.white.withValues(alpha: 0.11),
+                      Colors.white.withValues(alpha: 0.04),
+                    ]
+                  : [
+                      Colors.white.withValues(alpha: 0.07),
+                      Colors.white.withValues(alpha: 0.02),
+                    ],
             ),
-            border: Border.all(color: AppColors.glassBorder),
+            border: framed
+                ? Border.all(color: Colors.white.withValues(alpha: 0.12))
+                : null,
             boxShadow: [
               if (glow != null)
-                BoxShadow(color: glow!.withValues(alpha: 0.28), blurRadius: 28, spreadRadius: -6),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.35),
-                blurRadius: 24,
-                offset: const Offset(0, 14),
-              ),
+                BoxShadow(color: glow!.withValues(alpha: 0.22), blurRadius: 32, spreadRadius: -8),
+              if (framed)
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.28),
+                  blurRadius: 20,
+                  offset: const Offset(0, 12),
+                ),
             ],
           ),
           child: Padding(padding: padding, child: child),
@@ -137,6 +155,41 @@ class GlassPanel extends StatelessWidget {
       );
     }
     return panel;
+  }
+}
+
+/// Open list row — hairline divider instead of a card per item.
+class OpenListTile extends StatelessWidget {
+  const OpenListTile({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.padding = const EdgeInsets.symmetric(horizontal: 4, vertical: 14),
+    this.showDivider = true,
+  });
+
+  final Widget child;
+  final VoidCallback? onTap;
+  final EdgeInsetsGeometry padding;
+  final bool showDivider;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
+            child: Padding(padding: padding, child: child),
+          ),
+        ),
+        if (showDivider)
+          Divider(height: 1, color: Colors.white.withValues(alpha: 0.07)),
+      ],
+    );
   }
 }
 
@@ -241,9 +294,7 @@ class AppIconWell extends StatelessWidget {
                 ],
               ),
         borderRadius: BorderRadius.circular(size * 0.34),
-        border: Border.all(
-          color: filled ? Colors.white.withValues(alpha: 0.12) : color.withValues(alpha: 0.28),
-        ),
+        border: filled ? Border.all(color: Colors.white.withValues(alpha: 0.1)) : null,
         boxShadow: filled
             ? [BoxShadow(color: color.withValues(alpha: 0.4), blurRadius: 18, offset: const Offset(0, 8))]
             : null,
@@ -277,7 +328,7 @@ class MotospotMark extends StatelessWidget {
                 color: AppColors.ink,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.25,
-                fontSize: compact ? 20 : 24,
+                fontSize: compact ? 22 : 26,
               ),
         ),
         const SizedBox(height: 8),

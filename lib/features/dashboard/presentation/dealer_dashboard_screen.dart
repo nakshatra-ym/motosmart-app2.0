@@ -101,6 +101,7 @@ class DealerDashboardScreen extends ConsumerWidget {
                                 Expanded(
                                   flex: 6,
                                   child: GlassPanel(
+                                    style: GlassStyle.framed,
                                     glow: AppColors.yamahaBlue,
                                     padding: const EdgeInsets.all(20),
                                     child: Column(
@@ -130,7 +131,7 @@ class DealerDashboardScreen extends ConsumerWidget {
                                         AnimatedMetric(
                                           value: data.hotLeadsCount,
                                           style: theme.textTheme.displaySmall?.copyWith(
-                                            fontSize: 28,
+                                            fontSize: 32,
                                             fontWeight: FontWeight.w700,
                                             color: AppColors.ink,
                                           ),
@@ -248,54 +249,52 @@ class DealerDashboardScreen extends ConsumerWidget {
                         else
                           ...data.todaysFollowups.asMap().entries.map((entry) {
                             final item = entry.value;
+                            final isLast = entry.key == data.todaysFollowups.length - 1;
                             return FadeSlideIn(
                               delay: Duration(milliseconds: 200 + entry.key * 40),
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: GlassPanel(
-                                  onTap: () => context.push('/dealer/leads/${item.followup.leadId}'),
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                                  child: Row(
-                                    children: [
-                                      AppIconWell(
-                                        icon: item.followup.isOverdue
-                                            ? Icons.warning_amber_rounded
-                                            : Icons.event_available_rounded,
-                                        size: 44,
-                                        iconSize: 20,
+                              child: OpenListTile(
+                                showDivider: !isLast,
+                                onTap: () => context.push('/dealer/leads/${item.followup.leadId}'),
+                                child: Row(
+                                  children: [
+                                    AppIconWell(
+                                      icon: item.followup.isOverdue
+                                          ? Icons.warning_amber_rounded
+                                          : Icons.event_available_rounded,
+                                      size: 40,
+                                      iconSize: 18,
+                                      color: item.followup.isOverdue
+                                          ? AppColors.hot
+                                          : AppColors.yamahaBlue,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item.leadCustomerName,
+                                            style: theme.textTheme.titleSmall?.copyWith(
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                          Text(
+                                            '${item.followup.nextAction} · ${item.leadMobile}',
+                                            style: theme.textTheme.bodySmall,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      item.followup.isOverdue ? 'OVERDUE' : 'TODAY',
+                                      style: theme.textTheme.labelSmall?.copyWith(
                                         color: item.followup.isOverdue
                                             ? AppColors.hot
-                                            : AppColors.yamahaBlue,
+                                            : AppColors.statusFollowUp,
+                                        fontWeight: FontWeight.w700,
                                       ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              item.leadCustomerName,
-                                              style: theme.textTheme.titleSmall?.copyWith(
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            Text(
-                                              '${item.followup.nextAction} · ${item.leadMobile}',
-                                              style: theme.textTheme.bodySmall,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Text(
-                                        item.followup.isOverdue ? 'OVERDUE' : 'TODAY',
-                                        style: theme.textTheme.labelSmall?.copyWith(
-                                          color: item.followup.isOverdue
-                                              ? AppColors.hot
-                                              : AppColors.statusFollowUp,
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             );

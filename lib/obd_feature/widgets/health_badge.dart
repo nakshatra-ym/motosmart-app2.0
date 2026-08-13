@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../core/config/theme.dart';
 import '../models/obd_reading.dart';
 
 class HealthBadge extends StatelessWidget {
@@ -7,9 +9,9 @@ class HealthBadge extends StatelessWidget {
   const HealthBadge({super.key, required this.health});
 
   Color _color() => switch (health.level) {
-        HealthLevel.green => const Color(0xFF2E7D32),
-        HealthLevel.amber => const Color(0xFFF9A825),
-        HealthLevel.red => const Color(0xFFC62828),
+        HealthLevel.green => AppColors.statusClosedWon,
+        HealthLevel.amber => AppColors.warm,
+        HealthLevel.red => AppColors.hot,
       };
 
   String _label() => switch (health.level) {
@@ -27,50 +29,78 @@ class HealthBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = _color();
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+    return DecoratedBox(
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
+        borderRadius: BorderRadius.circular(18),
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            color.withValues(alpha: 0.18),
+            color.withValues(alpha: 0.04),
+            Colors.transparent,
+          ],
+          stops: const [0, 0.45, 1],
+        ),
       ),
-      child: Row(
-        children: [
-          Icon(_icon(), color: color, size: 32),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _label(),
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-                if (health.reasons.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    health.reasons.first,
-                    style: TextStyle(color: color.withValues(alpha: 0.85), fontSize: 12),
-                  ),
-                ],
-                const SizedBox(height: 4),
-                Text(
-                  'Rule-based · SAE diagnostic standards',
-                  style: TextStyle(
-                    color: color.withValues(alpha: 0.6),
-                    fontSize: 10.5,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ],
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 3,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
+              ),
             ),
-          ),
-        ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 16, 16, 16),
+                child: Row(
+                  children: [
+                    Icon(_icon(), color: color, size: 28),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _label(),
+                            style: TextStyle(
+                              color: color,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
+                          ),
+                          if (health.reasons.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              health.reasons.first,
+                              style: TextStyle(
+                                color: AppColors.inkMuted,
+                                fontSize: 12.5,
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 4),
+                          Text(
+                            'Rule-based · SAE diagnostic standards',
+                            style: TextStyle(
+                              color: AppColors.inkFaint,
+                              fontSize: 11,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -25,6 +25,7 @@ class EmptyState extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(28),
         child: GlassPanel(
+          style: GlassStyle.soft,
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
           glow: AppColors.yamahaBlue,
           child: Column(

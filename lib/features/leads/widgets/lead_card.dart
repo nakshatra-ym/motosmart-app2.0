@@ -30,10 +30,10 @@ class LeadCard extends ConsumerWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: GlassPanel(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: OpenListTile(
         onTap: onTap,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -55,8 +55,8 @@ class LeadCard extends ConsumerWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const AppIconWell(icon: Icons.two_wheeler_rounded, size: 28, iconSize: 14),
-                  const SizedBox(width: 8),
+                  Icon(Icons.two_wheeler_rounded, size: 16, color: AppColors.yamahaBlue),
+                  const SizedBox(width: 6),
                   Text(bikeName, style: theme.textTheme.bodySmall),
                 ],
               ),

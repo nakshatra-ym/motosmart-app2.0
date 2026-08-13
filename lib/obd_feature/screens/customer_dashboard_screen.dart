@@ -55,7 +55,9 @@ class CustomerDashboardScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 children: [
                   Card(
-                    color: AppColors.statusClosedWon.withValues(alpha: 0.12),
+                    color: AppColors.statusClosedWon.withValues(alpha: 0.1),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     child: ListTile(
                       dense: true,
                       leading: const Icon(Icons.bluetooth_connected, color: AppColors.statusClosedWon),
@@ -66,12 +68,12 @@ class CustomerDashboardScreen extends StatelessWidget {
                         style: const TextStyle(
                           color: AppColors.ink,
                           fontWeight: FontWeight.w600,
-                          fontSize: 13,
+                          fontSize: 14,
                         ),
                       ),
                       subtitle: const Text(
                         'Bluetooth connected',
-                        style: TextStyle(color: AppColors.inkMuted, fontSize: 11.5),
+                        style: TextStyle(color: AppColors.inkMuted, fontSize: 12.5),
                       ),
                     ),
                   ),
