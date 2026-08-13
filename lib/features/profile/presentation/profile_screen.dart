@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/auth/auth_controller.dart';
 import '../../../core/config/theme.dart';
+import '../../../core/widgets/app_visuals.dart';
 import '../../../data/mock/mock_providers.dart';
 import '../../../models/dealer.dart';
 
@@ -26,79 +27,137 @@ class ProfileScreen extends ConsumerWidget {
       }
     }
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 28),
-          children: [
-            Center(
-              child: CircleAvatar(
-                radius: 40,
-                backgroundColor: AppColors.yamahaBlue,
-                child: Text(
-                  (employee?.name ?? '?').substring(0, 1).toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                    fontWeight: FontWeight.w700,
+    return AppPageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Profile'),
+        ),
+        body: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+            children: [
+              Center(
+                child: Container(
+                  width: 88,
+                  height: 88,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.yamahaBlue,
+                        Color.lerp(AppColors.yamahaBlue, AppColors.brandInk, 0.35)!,
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.yamahaBlue.withValues(alpha: 0.35),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    (employee?.name ?? '?').substring(0, 1).toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 34,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 14),
-            Text(
-              employee?.name ?? 'Unknown',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleLarge,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Dealer Staff',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodySmall?.copyWith(color: AppColors.inkMuted),
-            ),
-            const SizedBox(height: 28),
-            Card(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.email_outlined),
-                    title: const Text('Email'),
-                    subtitle: Text(employee?.email ?? '—'),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.phone_outlined),
-                    title: const Text('Phone'),
-                    subtitle: Text(employee?.phone ?? '—'),
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.store_outlined),
-                    title: const Text('Dealer'),
-                    subtitle: Text(dealer == null ? '—' : '${dealer.name} · ${dealer.city}'),
-                  ),
-                ],
+              const SizedBox(height: 16),
+              Text(
+                employee?.name ?? 'Unknown',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
               ),
-            ),
-            const SizedBox(height: 14),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.emoji_events_outlined),
-                title: const Text('Incentives'),
-                trailing: const Icon(Icons.chevron_right, color: AppColors.inkFaint),
-                onTap: () => context.push('/dealer/profile/incentives'),
+              const SizedBox(height: 4),
+              Text(
+                'DEALER STAFF',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: AppColors.yamahaBlue,
+                  letterSpacing: 1.4,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            OutlinedButton.icon(
-              onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
-              icon: const Icon(Icons.logout),
-              label: const Text('Log out'),
-              style: OutlinedButton.styleFrom(foregroundColor: AppColors.yamahaRed),
-            ),
-          ],
+              const SizedBox(height: 24),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+                  border: Border.all(color: AppColors.border, width: 1.2),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const AppIconWell(
+                        icon: Icons.mail_outline_rounded,
+                        size: 40,
+                        iconSize: 18,
+                      ),
+                      title: const Text('Email'),
+                      subtitle: Text(employee?.email ?? '—'),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const AppIconWell(
+                        icon: Icons.phone_outlined,
+                        size: 40,
+                        iconSize: 18,
+                        color: AppColors.accent,
+                      ),
+                      title: const Text('Phone'),
+                      subtitle: Text(employee?.phone ?? '—'),
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const AppIconWell(
+                        icon: Icons.storefront_outlined,
+                        size: 40,
+                        iconSize: 18,
+                        color: AppColors.warm,
+                      ),
+                      title: const Text('Dealer'),
+                      subtitle: Text(dealer == null ? '—' : '${dealer.name} · ${dealer.city}'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+                  border: Border.all(color: AppColors.border, width: 1.2),
+                ),
+                child: ListTile(
+                  leading: const AppIconWell(
+                    icon: Icons.emoji_events_outlined,
+                    size: 40,
+                    iconSize: 18,
+                    color: AppColors.yamahaRed,
+                  ),
+                  title: const Text('Incentives'),
+                  trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.inkFaint),
+                  onTap: () => context.push('/dealer/profile/incentives'),
+                ),
+              ),
+              const SizedBox(height: 24),
+              OutlinedButton.icon(
+                onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
+                icon: const Icon(Icons.logout_rounded),
+                label: const Text('Log out'),
+                style: OutlinedButton.styleFrom(foregroundColor: AppColors.yamahaRed),
+              ),
+            ],
+          ),
         ),
       ),
     );

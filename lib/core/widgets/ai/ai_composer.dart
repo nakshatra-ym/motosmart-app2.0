@@ -99,7 +99,7 @@ class AiComposer extends StatelessWidget {
                     opacity: enabled ? 1 : 0.45,
                     duration: const Duration(milliseconds: 160),
                     child: Material(
-                      color: AppColors.yamahaBlue,
+                      color: AppColors.accent,
                       borderRadius: BorderRadius.circular(14),
                       child: InkWell(
                         onTap: enabled ? onSend : null,

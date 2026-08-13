@@ -6,6 +6,7 @@ import '../../../core/widgets/ai/ai_composer.dart';
 import '../../../core/widgets/ai/ai_message_bubble.dart';
 import '../../../core/widgets/ai/ai_suggestion_chips.dart';
 import '../../../core/widgets/ai/ai_typing_indicator.dart';
+import '../../../core/widgets/app_visuals.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../models/chat_message.dart';
 import '../data/chatbot_providers.dart';
@@ -90,20 +91,20 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
       });
     });
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
+    return AppPageBackground(
+      child: Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         titleSpacing: 16,
         title: Row(
           children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: AppColors.yamahaBlue.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(Icons.auto_awesome, size: 18, color: AppColors.yamahaBlue),
+            const AppIconWell(
+              icon: Icons.auto_awesome,
+              size: 38,
+              iconSize: 18,
+              color: AppColors.accent,
+              filled: true,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -113,12 +114,15 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                   Text(
                     'RideMate',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
                           letterSpacing: -0.2,
                         ),
                   ),
                   Text(
                     'Car & bike assistant',
-                    style: Theme.of(context).textTheme.labelSmall,
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: AppColors.inkMuted,
+                        ),
                   ),
                 ],
               ),
@@ -162,6 +166,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 }
@@ -204,19 +209,19 @@ class _EmptyChat extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      AppColors.yamahaBlue.withValues(alpha: 0.12),
-                      AppColors.yamahaBlue.withValues(alpha: 0.04),
+                      AppColors.accent.withValues(alpha: 0.16),
+                      AppColors.yamahaBlue.withValues(alpha: 0.06),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(
-                    color: AppColors.yamahaBlue.withValues(alpha: 0.08),
+                    color: AppColors.accent.withValues(alpha: 0.18),
                   ),
                 ),
                 child: const Icon(
                   Icons.auto_awesome,
                   size: 32,
-                  color: AppColors.yamahaBlue,
+                  color: AppColors.accent,
                 ),
               ),
               const SizedBox(height: 22),

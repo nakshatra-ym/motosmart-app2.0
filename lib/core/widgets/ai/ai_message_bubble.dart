@@ -42,13 +42,13 @@ class AiMessageBubble extends StatelessWidget {
                         width: 22,
                         height: 22,
                         decoration: BoxDecoration(
-                          color: AppColors.yamahaBlue.withValues(alpha: 0.1),
+                          color: AppColors.accent.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(7),
                         ),
                         child: const Icon(
                           Icons.auto_awesome,
                           size: 12,
-                          color: AppColors.yamahaBlue,
+                          color: AppColors.accent,
                         ),
                       ),
                       const SizedBox(width: 6),

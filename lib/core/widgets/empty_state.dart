@@ -22,27 +22,34 @@ class EmptyState extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(36),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 64,
-              height: 64,
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
-                color: AppColors.yamahaBlue.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.yamahaBlue.withValues(alpha: 0.08)),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.yamahaBlue.withValues(alpha: 0.18),
+                    AppColors.accent.withValues(alpha: 0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: AppColors.yamahaBlue.withValues(alpha: 0.12)),
               ),
-              child: Icon(icon, size: 28, color: AppColors.yamahaBlue.withValues(alpha: 0.75)),
+              child: Icon(icon, size: 30, color: AppColors.yamahaBlue),
             ),
-            const SizedBox(height: 18),
+            const SizedBox(height: 20),
             Text(
               title,
               textAlign: TextAlign.center,
               style: theme.textTheme.titleMedium?.copyWith(
                 color: AppColors.ink,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
               ),
             ),
             if (subtitle != null) ...[
@@ -52,12 +59,12 @@ class EmptyState extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: AppColors.inkMuted,
-                  height: 1.45,
+                  height: 1.5,
                 ),
               ),
             ],
             if (action != null) ...[
-              const SizedBox(height: 20),
+              const SizedBox(height: 22),
               action!,
             ],
           ],

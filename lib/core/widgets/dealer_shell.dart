@@ -56,10 +56,17 @@ class _DealerShellState extends ConsumerState<DealerShell> with WidgetsBindingOb
   Widget build(BuildContext context) {
     return Scaffold(
       body: widget.navigationShell,
-      bottomNavigationBar: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(top: BorderSide(color: AppColors.border)),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: AppColors.surfaceElevated,
+          border: const Border(top: BorderSide(color: AppColors.border, width: 1.2)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.brandInk.withValues(alpha: 0.06),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
         ),
         child: NavigationBar(
           selectedIndex: widget.navigationShell.currentIndex,
@@ -69,23 +76,23 @@ class _DealerShellState extends ConsumerState<DealerShell> with WidgetsBindingOb
           ),
           destinations: const [
             NavigationDestination(
-              icon: Icon(Icons.dashboard_outlined),
-              selectedIcon: Icon(Icons.dashboard),
+              icon: Icon(Icons.grid_view_outlined),
+              selectedIcon: Icon(Icons.grid_view_rounded),
               label: 'Dashboard',
             ),
             NavigationDestination(
               icon: Icon(Icons.groups_outlined),
-              selectedIcon: Icon(Icons.groups),
+              selectedIcon: Icon(Icons.groups_rounded),
               label: 'Leads',
             ),
             NavigationDestination(
               icon: Icon(Icons.confirmation_number_outlined),
-              selectedIcon: Icon(Icons.confirmation_number),
+              selectedIcon: Icon(Icons.confirmation_number_rounded),
               label: 'Tickets',
             ),
             NavigationDestination(
-              icon: Icon(Icons.person_outline),
-              selectedIcon: Icon(Icons.person),
+              icon: Icon(Icons.person_outline_rounded),
+              selectedIcon: Icon(Icons.person_rounded),
               label: 'Profile',
             ),
           ],

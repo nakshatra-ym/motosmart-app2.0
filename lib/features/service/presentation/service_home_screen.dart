@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/config/theme.dart';
+import '../../../core/widgets/app_visuals.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/ticket_ai_chips.dart';
@@ -23,9 +24,14 @@ class ServiceHomeScreen extends ConsumerWidget {
     final requestsAsync = ref.watch(serviceRequestsListProvider);
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Service')),
-      body: RefreshIndicator(
+    return AppPageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title: const Text('Service'),
+        ),
+        body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(myVehiclesProvider);
           ref.invalidate(serviceRequestsListProvider);
@@ -87,6 +93,7 @@ class ServiceHomeScreen extends ConsumerWidget {
           },
         ),
       ),
+    ),
     );
   }
 }

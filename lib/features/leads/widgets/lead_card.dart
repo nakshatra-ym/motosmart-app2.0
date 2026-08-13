@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/config/theme.dart';
+import '../../../core/widgets/app_visuals.dart';
 import '../../../core/widgets/intent_badge.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../../models/lead.dart';
@@ -17,6 +18,7 @@ class LeadCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bikeModels = ref.watch(bikeModelsProvider).valueOrNull;
+    final theme = Theme.of(context);
     String? bikeName;
     if (bikeModels != null && lead.interestedModelId != null) {
       for (final b in bikeModels) {
@@ -27,8 +29,14 @@ class LeadCard extends ConsumerWidget {
       }
     }
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceElevated,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        border: Border.all(color: AppColors.border, width: 1.2),
+        boxShadow: AppTheme.softShadow,
+      ),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppTheme.radiusLg),
         onTap: onTap,
@@ -42,7 +50,7 @@ class LeadCard extends ConsumerWidget {
                   Expanded(
                     child: Text(
                       lead.customerName,
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -52,22 +60,25 @@ class LeadCard extends ConsumerWidget {
               const SizedBox(height: 6),
               Text(
                 lead.mobile,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.inkMuted,
-                      fontSize: 13,
-                    ),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: AppColors.inkMuted,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               if (bikeName != null) ...[
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.two_wheeler, size: 14, color: AppColors.inkFaint),
-                    const SizedBox(width: 6),
+                    const AppIconWell(
+                      icon: Icons.two_wheeler_rounded,
+                      size: 28,
+                      iconSize: 14,
+                    ),
+                    const SizedBox(width: 8),
                     Text(
                       bikeName,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.inkMuted,
-                          ),
+                      style: theme.textTheme.bodySmall?.copyWith(color: AppColors.inkMuted),
                     ),
                   ],
                 ),
@@ -80,7 +91,7 @@ class LeadCard extends ConsumerWidget {
                   if (lead.tentativePurchaseDate != null)
                     Text(
                       DateFormat('d MMM').format(lead.tentativePurchaseDate!),
-                      style: Theme.of(context).textTheme.labelSmall,
+                      style: theme.textTheme.labelSmall,
                     ),
                 ],
               ),
