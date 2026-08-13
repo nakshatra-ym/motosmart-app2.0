@@ -18,6 +18,7 @@ class ServiceRequest {
     this.customerName,
     this.customerPhone,
     this.vehicleLabel,
+    this.messageCount = 0,
   });
 
   final String id;
@@ -43,6 +44,10 @@ class ServiceRequest {
   final String? customerPhone;
   final String? vehicleLabel;
 
+  /// How many messages the thread holds. Sent by the API so a queue can show
+  /// which conversations are already running without opening each one.
+  final int messageCount;
+
   ServiceRequest copyWith({ServiceRequestStatus? status}) => ServiceRequest(
         id: id,
         vehicleId: vehicleId,
@@ -59,6 +64,7 @@ class ServiceRequest {
         customerName: customerName,
         customerPhone: customerPhone,
         vehicleLabel: vehicleLabel,
+        messageCount: messageCount,
       );
 
   factory ServiceRequest.fromJson(Map<String, dynamic> json) => ServiceRequest(
@@ -78,6 +84,7 @@ class ServiceRequest {
         customerName: json['customer_name'] as String?,
         customerPhone: json['customer_phone'] as String?,
         vehicleLabel: json['vehicle_label'] as String?,
+        messageCount: asInt(json['message_count']),
       );
 
   Map<String, dynamic> toJson() => {
@@ -96,5 +103,6 @@ class ServiceRequest {
         'customer_name': customerName,
         'customer_phone': customerPhone,
         'vehicle_label': vehicleLabel,
+        'message_count': messageCount,
       };
 }

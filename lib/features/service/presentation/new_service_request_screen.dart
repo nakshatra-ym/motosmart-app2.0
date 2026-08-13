@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/config/design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -148,14 +150,14 @@ class _NewServiceRequestScreenState extends ConsumerState<NewServiceRequestScree
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.04),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(Ds.rSm),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Row(
                         children: [
-                          Icon(Icons.memory, size: 16, color: Colors.black54),
+                          Icon(Icons.memory, size: 16, color: Ds.inkSoft),
                           SizedBox(width: 6),
                           Text(
                             'Diagnostics attached',
@@ -166,7 +168,7 @@ class _NewServiceRequestScreenState extends ConsumerState<NewServiceRequestScree
                       const SizedBox(height: 6),
                       Text(
                         widget.args.obdContext!,
-                        style: const TextStyle(fontSize: 11, color: Colors.black54),
+                        style: const TextStyle(fontSize: 11, color: Ds.inkSoft),
                       ),
                     ],
                   ),

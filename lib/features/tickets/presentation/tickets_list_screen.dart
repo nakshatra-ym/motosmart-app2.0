@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../core/config/theme.dart';
+import '../../../core/config/design.dart';
+import '../../../core/widgets/document.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/ticket_ai_chips.dart';
@@ -57,7 +58,16 @@ class TicketsListScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Tickets')),
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('SERVICE DESK', style: Ds.label()),
+            Text('Job cards', style: Theme.of(context).textTheme.headlineMedium),
+          ],
+        ),
+      ),
       body: RefreshIndicator(
         onRefresh: () async => ref.invalidate(ticketsListProvider),
         child: AsyncValueWidget<List<ServiceRequest>>(
@@ -66,68 +76,109 @@ class TicketsListScreen extends ConsumerWidget {
           data: (tickets) {
             if (tickets.isEmpty) {
               return const EmptyState(
-                icon: Icons.confirmation_number_outlined,
-                title: 'No tickets yet',
-                subtitle: 'Service requests raised by your customers will show up here.',
+                icon: Icons.receipt_long_outlined,
+                title: 'No job cards open',
+                subtitle:
+                    'Service requests your customers raise arrive here, sorted with the urgent ones first.',
               );
             }
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
+            return ListView.separated(
+              padding: Ds.pagePad(context),
               itemCount: tickets.length,
+              separatorBuilder: (_, _) => const SizedBox(height: Ds.s3),
               itemBuilder: (context, index) {
                 final ticket = tickets[index];
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(12),
+                final text = Theme.of(context).textTheme;
+                final urgent = ticket.aiPriority == TicketPriority.urgent;
+                return DocPage(
+                  child: DocSheet(
+                    // The spine is the AI's priority, so the queue reads down
+                    // its left edge before anybody reads a word.
+                    spine: ticket.aiPriority == null
+                        ? Ds.line
+                        : TicketAiChips.colorFor(ticket.aiPriority!),
+                    tint: urgent ? Ds.alert.withValues(alpha: 0.045) : null,
+                    emphasis: urgent,
                     onTap: () => context.push('/dealer/tickets/${ticket.id}'),
-                    child: Padding(
-                      padding: const EdgeInsets.all(14),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  ticket.type,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                ),
+                    padding: const EdgeInsets.all(Ds.s3 + 2),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                ticket.type,
+                                style: text.titleMedium?.copyWith(color: Ds.ink),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              _StatusChip(status: ticket.status),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(customerName(ticket), style: const TextStyle(color: Colors.black54)),
-                          if (vehicleLabel(ticket) != null) ...[
-                            const SizedBox(height: 2),
-                            Text(
-                              vehicleLabel(ticket)!,
-                              style: const TextStyle(color: Colors.black54, fontSize: 12),
                             ),
+                            const SizedBox(width: Ds.s2),
+                            _StatusChip(status: ticket.status),
                           ],
-                          if (ticket.aiPriority != null || ticket.aiCategory != null) ...[
-                            const SizedBox(height: 8),
-                            TicketAiChips(
-                              priority: ticket.aiPriority,
-                              category: ticket.aiCategory,
-                            ),
-                          ],
-                          const SizedBox(height: 8),
-                          // The AI one-liner reads better in a queue than the
-                          // customer's full prose; falls back to the prose.
+                        ),
+                        const SizedBox(height: 5),
+                        // Who raised it, and on which bike — the dealer is
+                        // answering a person, not a row.
+                        Text(
+                          customerName(ticket),
+                          style: text.bodyMedium?.copyWith(color: Ds.inkSoft),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (vehicleLabel(ticket) != null) ...[
+                          const SizedBox(height: 2),
                           Text(
-                            ticket.aiSummary ?? ticket.description,
-                            maxLines: 2,
+                            vehicleLabel(ticket)!,
+                            style: text.bodySmall,
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            DateFormat('d MMM yyyy, h:mm a').format(ticket.createdAt),
-                            style: const TextStyle(color: Colors.black45, fontSize: 11),
+                        ],
+                        if (ticket.aiPriority != null || ticket.aiCategory != null) ...[
+                          const SizedBox(height: Ds.s3),
+                          TicketAiChips(
+                            priority: ticket.aiPriority,
+                            category: ticket.aiCategory,
                           ),
                         ],
-                      ),
+                        const SizedBox(height: Ds.s3),
+                        // The AI one-liner reads better in a queue than the
+                        // customer's full prose; falls back to the prose.
+                        Text(
+                          ticket.aiSummary ?? ticket.description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: text.bodySmall?.copyWith(color: Ds.inkSoft),
+                        ),
+                        const SizedBox(height: Ds.s3),
+                        Row(
+                          children: [
+                            const Icon(Icons.schedule,
+                                size: 11.5, color: Ds.inkMuted),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                DateFormat('d MMM, h:mm a').format(ticket.createdAt),
+                                style: Ds.figure(11, weight: 540, color: Ds.inkMuted),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (ticket.messageCount > 0) ...[
+                              const Icon(Icons.forum_outlined,
+                                  size: 11.5, color: Ds.inkMuted),
+                              const SizedBox(width: 3),
+                              Text(
+                                '${ticket.messageCount}',
+                                style: Ds.figure(11, weight: 620, color: Ds.inkMuted),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -148,17 +199,21 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (status) {
-      ServiceRequestStatus.open => AppColors.statusNew,
-      ServiceRequestStatus.inProgress => AppColors.statusFollowUp,
-      ServiceRequestStatus.resolved => AppColors.statusClosedWon,
+      ServiceRequestStatus.open => Ds.info,
+      ServiceRequestStatus.inProgress => Ds.caution,
+      ServiceRequestStatus.resolved => Ds.positive,
     };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: Ds.s2, vertical: 3.5),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(Ds.rSm),
+        border: Border.all(color: color.withValues(alpha: 0.40)),
       ),
-      child: Text(status.label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+      child: Text(
+        status.label.toUpperCase(),
+        style: Ds.label(color: color).copyWith(fontSize: 10),
+      ),
     );
   }
 }

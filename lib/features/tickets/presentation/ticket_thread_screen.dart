@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/config/design.dart';
 import '../../../core/config/theme.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../models/enums.dart';
@@ -98,7 +99,7 @@ class _TicketThreadScreenState extends ConsumerState<TicketThreadScreen> {
                   Expanded(
                     child: Text(
                       ticket.description,
-                      style: const TextStyle(color: Colors.black54),
+                      style: const TextStyle(color: Ds.inkSoft),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -138,7 +139,7 @@ class _TicketThreadScreenState extends ConsumerState<TicketThreadScreen> {
                       constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
                       decoration: BoxDecoration(
                         color: isMe ? AppColors.yamahaBlue : Colors.black.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(Ds.rMd),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,7 +153,7 @@ class _TicketThreadScreenState extends ConsumerState<TicketThreadScreen> {
                             DateFormat('d MMM, h:mm a').format(m.createdAt),
                             style: TextStyle(
                               fontSize: 10,
-                              color: isMe ? Colors.white70 : Colors.black45,
+                              color: isMe ? Colors.white70 : Ds.inkMuted,
                             ),
                           ),
                         ],

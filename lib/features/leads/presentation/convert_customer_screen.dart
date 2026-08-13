@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/config/design.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../dashboard/data/dashboard_providers.dart';
 import '../data/leads_providers.dart';
@@ -97,7 +98,7 @@ class _ConvertFormState extends ConsumerState<_ConvertForm> {
                     Text(lead.customerName,
                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 4),
-                    Text(lead.mobile, style: const TextStyle(color: Colors.black54)),
+                    Text(lead.mobile, style: const TextStyle(color: Ds.inkSoft)),
                   ],
                 ),
               ),

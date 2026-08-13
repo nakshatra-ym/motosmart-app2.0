@@ -3,8 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/auth/auth_controller.dart';
-import '../../../core/config/theme.dart';
+import '../../../core/config/design.dart';
 
+/// Sign-in. One field, one button, nothing else competing for attention.
+///
+/// Deliberately spare: this screen exists to be passed through, so it carries a
+/// small mark, the single input, and the demo accounts kept visibly secondary.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -41,87 +45,82 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+
     return Scaffold(
+      backgroundColor: Ds.surface,
+      appBar: AppBar(backgroundColor: Ds.surface, elevation: 0),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.fromLTRB(Ds.s6, 0, Ds.s6, Ds.s6),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
+              constraints: const BoxConstraints(maxWidth: Ds.formMax),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(Icons.two_wheeler, size: 56, color: AppColors.yamahaBlue),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Smart Dealer Enquiry App',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            color: AppColors.yamahaBlue,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    // A small square mark rather than a logo lockup — quiet, and
+                    // it does not pretend to be brand artwork we do not have.
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Ds.brand,
+                        borderRadius: BorderRadius.circular(Ds.rSm + 2),
+                      ),
+                      child: const Icon(
+                        Icons.two_wheeler,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: Ds.s6),
+                    Text('Sign in', style: text.displaySmall),
+                    const SizedBox(height: Ds.s2),
                     Text(
-                      'Dealer staff & customer sign-in',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(color: Colors.black.withValues(alpha: 0.6)),
+                      'We will send a one-time code to the email on your '
+                      'account. Dealer staff and owners use the same sign-in.',
+                      style: text.bodyMedium,
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: Ds.s8),
                     TextFormField(
                       controller: _identifierController,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.done,
+                      autofillHints: const [AutofillHints.email],
+                      style: text.titleMedium,
                       decoration: const InputDecoration(
-                        labelText: 'Work email or mobile number',
-                        prefixIcon: Icon(Icons.badge_outlined),
+                        labelText: 'Email or mobile',
+                        hintText: 'you@dealership.com',
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Enter your email or mobile number';
+                          return 'Enter the email or mobile on your account';
                         }
                         return null;
                       },
                       onFieldSubmitted: (_) => _sendOtp(),
                     ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
+                    const SizedBox(height: Ds.s4),
+                    FilledButton(
                       onPressed: _isSubmitting ? null : _sendOtp,
                       child: _isSubmitting
                           ? const SizedBox(
-                              height: 20,
-                              width: 20,
+                              height: 18,
+                              width: 18,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Send OTP'),
+                          : const Text('Send code'),
                     ),
-                    const SizedBox(height: 24),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      // Real accounts get a real emailed OTP; the seeded ones
-                      // are Postgres-only and accept any code.
-                      child: const Text(
-                        'Real OTP (code arrives by email):\n'
-                        'Dealer — ijklmnop7417@gmail.com\n'
-                        'Customer — darklord5156@gmail.com\n\n'
-                        'Demo accounts (any OTP works):\n'
-                        'Dealer — rohan@ymsli-demo.example\n'
-                        'Customer — test.customer@ymsli-demo.example',
-                        style: TextStyle(fontSize: 12, color: Colors.black54),
-                      ),
-                    ),
+                    const SizedBox(height: Ds.s10),
+                    _DemoAccounts(onPick: (address) {
+                      _identifierController.text = address;
+                    }),
                   ],
                 ),
               ),
@@ -129,6 +128,77 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// The seeded and real demo accounts, kept quiet and tappable so nobody has to
+/// type a long address on a phone mid-demo. Tapping only fills the field — the
+/// user still presses Send code, so nothing happens behind their back.
+class _DemoAccounts extends StatelessWidget {
+  const _DemoAccounts({required this.onPick});
+
+  final ValueChanged<String> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text('Demo accounts', style: text.labelSmall),
+            const SizedBox(width: Ds.s2),
+            const Expanded(child: Divider(color: Ds.line, height: 1)),
+          ],
+        ),
+        const SizedBox(height: Ds.s2),
+        for (final account in const [
+          ('Dealer', 'ijklmnop7417@gmail.com', true),
+          ('Owner', 'darklord5156@gmail.com', true),
+          ('Dealer', 'rohan@ymsli-demo.example', false),
+          ('Owner', 'test.customer@ymsli-demo.example', false),
+        ])
+          InkWell(
+            onTap: () => onPick(account.$2),
+            borderRadius: BorderRadius.circular(Ds.rSm),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: Ds.s2, horizontal: 2),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 52,
+                    child: Text(
+                      account.$1,
+                      style: text.labelMedium?.copyWith(color: Ds.inkSoft),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      account.$2,
+                      style: text.bodySmall?.copyWith(color: Ds.inkSoft),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: Ds.s2),
+                  Icon(
+                    account.$3 ? Icons.mail_outline : Icons.science_outlined,
+                    size: 14,
+                    color: account.$3 ? Ds.positive : Ds.inkMuted,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        const SizedBox(height: Ds.s2),
+        Text(
+          'Real accounts get a code by email. Seeded ones accept any code.',
+          style: text.bodySmall,
+        ),
+      ],
     );
   }
 }

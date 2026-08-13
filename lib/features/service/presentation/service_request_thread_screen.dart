@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/auth/auth_controller.dart';
+import '../../../core/config/design.dart';
 import '../../../core/config/theme.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/ticket_ai_chips.dart';
@@ -80,12 +81,12 @@ class _ServiceRequestThreadScreenState extends ConsumerState<ServiceRequestThrea
                           const SizedBox(height: 6),
                           Row(
                             children: [
-                              const Icon(Icons.auto_awesome, size: 13, color: Colors.black45),
+                              const Icon(Icons.auto_awesome, size: 13, color: Ds.inkMuted),
                               const SizedBox(width: 6),
                               Expanded(
                                 child: Text(
                                   r.aiSummary!,
-                                  style: const TextStyle(fontSize: 12, color: Colors.black54),
+                                  style: const TextStyle(fontSize: 12, color: Ds.inkSoft),
                                 ),
                               ),
                             ],
@@ -115,7 +116,7 @@ class _ServiceRequestThreadScreenState extends ConsumerState<ServiceRequestThrea
                       constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
                       decoration: BoxDecoration(
                         color: isMe ? AppColors.yamahaBlue : Colors.black.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(Ds.rMd),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +130,7 @@ class _ServiceRequestThreadScreenState extends ConsumerState<ServiceRequestThrea
                             DateFormat('d MMM, h:mm a').format(m.createdAt),
                             style: TextStyle(
                               fontSize: 10,
-                              color: isMe ? Colors.white70 : Colors.black45,
+                              color: isMe ? Colors.white70 : Ds.inkMuted,
                             ),
                           ),
                         ],

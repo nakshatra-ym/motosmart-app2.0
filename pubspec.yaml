@@ -66,6 +66,14 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # Self-hosted so the app never depends on the network or on whatever face the
+  # device happens to ship. One variable file carries both axes: weight for the
+  # type scale, width for the condensed plate/label register.
+  fonts:
+    - family: Archivo
+      fonts:
+        - asset: assets/fonts/Archivo.ttf
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

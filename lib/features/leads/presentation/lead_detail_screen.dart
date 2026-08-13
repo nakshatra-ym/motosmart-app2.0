@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../../core/config/theme.dart';
+import '../../../core/config/design.dart';
+import '../../../core/widgets/document.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../core/widgets/intent_badge.dart';
@@ -24,7 +25,16 @@ class LeadDetailScreen extends ConsumerWidget {
     final leadAsync = ref.watch(leadDetailProvider(leadId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Lead detail')),
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('ENQUIRY RECORD', style: Ds.label()),
+            Text('Detail', style: Theme.of(context).textTheme.headlineSmall),
+          ],
+        ),
+      ),
       body: AsyncValueWidget<Lead>(
         value: leadAsync,
         onRetry: () => ref.invalidate(leadDetailProvider(leadId)),
@@ -150,101 +160,138 @@ class _LeadDetailBody extends ConsumerWidget {
     final canConvert = lead.convertedCustomerId == null && lead.status != LeadStatus.closedWon;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+      padding: Ds.pagePad(context),
       children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+        DocPage(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // The record's head: who, their number, the AI's stamp, and the
+              // status field that can be re-filed.
+              DocSheet(
+                emphasis: true,
+                padding: const EdgeInsets.all(Ds.s4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        lead.customerName,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            lead.customerName,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                        ),
+                        const SizedBox(width: Ds.s2),
+                        if (lead.aiIntent != null)
+                          IntentBadge(intent: lead.aiIntent!)
+                        else
+                          UnclassifiedBadge(onTap: () => _classify(context, ref)),
+                      ],
+                    ),
+                    const SizedBox(height: Ds.s2),
+                    Row(
+                      children: [
+                        const Icon(Icons.call_outlined, size: 14, color: Ds.inkMuted),
+                        const SizedBox(width: 5),
+                        Text(
+                          lead.mobile,
+                          style: Ds.figure(14, weight: 580, color: Ds.inkSoft),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: Ds.s4),
+                    // Re-filing the record: the status field is the control.
+                    Material(
+                      type: MaterialType.transparency,
+                      child: InkWell(
+                        onTap: () => _changeStatus(context, ref),
+                        borderRadius: BorderRadius.circular(Ds.rSm),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              StatusChip(status: lead.status),
+                              const SizedBox(width: 6),
+                              const Icon(Icons.edit_outlined,
+                                  size: 14, color: Ds.inkMuted),
+                              const SizedBox(width: 4),
+                              Text('Change', style: Ds.label()),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    if (lead.aiIntent != null)
-                      IntentBadge(intent: lead.aiIntent!)
-                    else
-                      UnclassifiedBadge(onTap: () => _classify(context, ref)),
                   ],
                 ),
-                const SizedBox(height: 4),
-                Row(
+              ),
+              const SizedBox(height: Ds.s3),
+              // The pre-printed field block.
+              DocSheet(
+                padding: const EdgeInsets.all(Ds.s4),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(Icons.phone, size: 15, color: Colors.black54),
-                    const SizedBox(width: 4),
-                    Text(lead.mobile, style: const TextStyle(color: Colors.black54)),
+                    _FieldGrid(fields: [
+                      ('Source', lead.source.label),
+                      (
+                        'Interested model',
+                        bikeName?.isNotEmpty == true ? bikeName!.first : '—'
+                      ),
+                      ('Current bike', lead.currentBike ?? '—'),
+                      (
+                        'Tentative purchase',
+                        lead.tentativePurchaseDate == null
+                            ? '—'
+                            : DateFormat('d MMM yyyy')
+                                .format(lead.tentativePurchaseDate!)
+                      ),
+                    ]),
+                    if (lead.notes?.isNotEmpty == true) ...[
+                      const SizedBox(height: Ds.s4),
+                      const Divider(height: 1, color: Ds.line),
+                      const SizedBox(height: Ds.s3),
+                      DocField(label: 'Notes', value: lead.notes),
+                    ],
                   ],
                 ),
-                const SizedBox(height: 12),
-                InkWell(
-                  onTap: () => _changeStatus(context, ref),
+              ),
+              if (lead.convertedCustomerId != null) ...[
+                const SizedBox(height: Ds.s3),
+                // The endorsement: this enquiry became a customer.
+                DocSheet(
+                  spine: Ds.positive,
+                  tint: Ds.positive.withValues(alpha: 0.06),
+                  padding: const EdgeInsets.all(Ds.s4),
                   child: Row(
                     children: [
-                      StatusChip(status: lead.status),
-                      const SizedBox(width: 6),
-                      const Icon(Icons.edit, size: 14, color: Colors.black38),
+                      const DocStamp(
+                        label: 'Converted',
+                        color: Ds.positive,
+                        icon: Icons.verified_outlined,
+                        filled: true,
+                      ),
+                      const SizedBox(width: Ds.s3),
+                      Expanded(
+                        child: Text(
+                          'Now an onboarded customer.',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _InfoRow(label: 'Source', value: lead.source.label),
-                _InfoRow(label: 'Interested model', value: bikeName?.isNotEmpty == true ? bikeName!.first : '—'),
-                _InfoRow(label: 'Current bike', value: lead.currentBike ?? '—'),
-                _InfoRow(
-                  label: 'Tentative purchase',
-                  value: lead.tentativePurchaseDate == null
-                      ? '—'
-                      : DateFormat('d MMM yyyy').format(lead.tentativePurchaseDate!),
+              const SizedBox(height: Ds.s6),
+              DocSectionHeader(
+                title: 'Follow-ups',
+                trailing: TextButton.icon(
+                  onPressed: () => _addFollowup(context, ref),
+                  icon: const Icon(Icons.add, size: 17),
+                  label: const Text('Schedule'),
                 ),
-                _InfoRow(label: 'Notes', value: lead.notes?.isNotEmpty == true ? lead.notes! : '—'),
-              ],
-            ),
-          ),
-        ),
-        if (lead.convertedCustomerId != null) ...[
-          const SizedBox(height: 12),
-          Card(
-            color: AppColors.statusClosedWon.withValues(alpha: 0.08),
-            child: ListTile(
-              leading: const Icon(Icons.verified, color: AppColors.statusClosedWon),
-              title: const Text('Converted to customer'),
-              subtitle: Text('Customer ID: ${lead.convertedCustomerId}'),
-            ),
-          ),
-        ],
-        const SizedBox(height: 20),
-        Row(
-          children: [
-            Text(
-              'Follow-ups',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const Spacer(),
-            TextButton.icon(
-              onPressed: () => _addFollowup(context, ref),
-              icon: const Icon(Icons.add),
-              label: const Text('Add'),
-            ),
-          ],
-        ),
+              ),
         AsyncValueWidget<List<LeadFollowup>>(
           value: followupsAsync,
           onRetry: () => ref.invalidate(leadFollowupsProvider(lead.id)),
@@ -269,38 +316,68 @@ class _LeadDetailBody extends ConsumerWidget {
             );
           },
         ),
-        const SizedBox(height: 24),
-        if (canConvert)
-          OutlinedButton.icon(
-            onPressed: () => context.push('/dealer/leads/${lead.id}/convert'),
-            icon: const Icon(Icons.person_add),
-            label: const Text('Convert to customer'),
+              const SizedBox(height: Ds.s6),
+              if (canConvert)
+                OutlinedButton.icon(
+                  onPressed: () =>
+                      context.push('/dealer/leads/${lead.id}/convert'),
+                  icon: const Icon(Icons.how_to_reg_outlined, size: 18),
+                  label: const Text('Convert to customer'),
+                ),
+              const SizedBox(height: Ds.s8),
+            ],
           ),
+        ),
       ],
     );
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({required this.label, required this.value});
+/// The field block: two columns on a wide window, one on a phone. A form's
+/// fields, not a run of label/value rows.
+class _FieldGrid extends StatelessWidget {
+  const _FieldGrid({required this.fields});
 
-  final String label;
-  final String value;
+  final List<(String, String)> fields;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
+    final twoUp = MediaQuery.sizeOf(context).width >= 420;
+    if (!twoUp) {
+      return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 130,
-            child: Text(label, style: const TextStyle(color: Colors.black54, fontSize: 13)),
-          ),
-          Expanded(child: Text(value, style: const TextStyle(fontSize: 14))),
+          for (var i = 0; i < fields.length; i++) ...[
+            if (i > 0) const SizedBox(height: Ds.s3),
+            DocField(label: fields[i].$1, value: fields[i].$2),
+          ],
         ],
-      ),
+      );
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < fields.length; i += 2) ...[
+          if (i > 0) const SizedBox(height: Ds.s4),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: DocField(label: fields[i].$1, value: fields[i].$2),
+              ),
+              const SizedBox(width: Ds.s4),
+              Expanded(
+                child: i + 1 < fields.length
+                    ? DocField(
+                        label: fields[i + 1].$1,
+                        value: fields[i + 1].$2,
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
+        ],
+      ],
     );
   }
 }
@@ -314,12 +391,12 @@ class _FollowupTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tagColor = followup.completed
-        ? AppColors.statusClosedWon
+        ? Ds.positive
         : followup.isOverdue
-            ? AppColors.hot
+            ? Ds.alert
             : followup.isDueToday
-                ? AppColors.warm
-                : AppColors.cold;
+                ? Ds.caution
+                : Ds.info;
     final tagText = followup.completed
         ? 'Done'
         : followup.isOverdue
@@ -328,27 +405,61 @@ class _FollowupTile extends StatelessWidget {
                 ? 'Today'
                 : DateFormat('d MMM').format(followup.scheduledDate);
 
-    return Card(
-      margin: const EdgeInsets.only(top: 8),
-      child: ListTile(
-        leading: Checkbox(
-          value: followup.completed,
-          onChanged: followup.completed ? null : (_) => onMarkDone(),
-        ),
-        title: Text(
-          followup.nextAction,
-          style: TextStyle(
-            decoration: followup.completed ? TextDecoration.lineThrough : null,
-          ),
-        ),
-        subtitle: followup.outcomeNote == null ? null : Text(followup.outcomeNote!),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          decoration: BoxDecoration(
-            color: tagColor.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(tagText, style: TextStyle(color: tagColor, fontSize: 11, fontWeight: FontWeight.w600)),
+    final text = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Ds.s2),
+      child: DocSheet(
+        spine: followup.completed ? Ds.line : tagColor,
+        padding: const EdgeInsets.fromLTRB(Ds.s2, Ds.s2, Ds.s3, Ds.s2),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // The tick box on a job card: ticking it signs the action off.
+            SizedBox(
+              width: 34,
+              height: 34,
+              child: Checkbox(
+                value: followup.completed,
+                onChanged: followup.completed ? null : (_) => onMarkDone(),
+                visualDensity: VisualDensity.compact,
+                side: const BorderSide(color: Ds.lineStrong, width: 1.4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(Ds.rSm),
+                ),
+                activeColor: Ds.positive,
+              ),
+            ),
+            const SizedBox(width: Ds.s1),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 7),
+                  Text(
+                    followup.nextAction,
+                    style: text.bodyMedium?.copyWith(
+                      color: followup.completed ? Ds.inkMuted : Ds.ink,
+                      decoration:
+                          followup.completed ? TextDecoration.lineThrough : null,
+                    ),
+                  ),
+                  if (followup.outcomeNote != null) ...[
+                    const SizedBox(height: 3),
+                    Text(followup.outcomeNote!, style: text.bodySmall),
+                  ],
+                  const SizedBox(height: 6),
+                ],
+              ),
+            ),
+            const SizedBox(width: Ds.s2),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                tagText.toUpperCase(),
+                style: Ds.label(color: tagColor).copyWith(fontSize: 10),
+              ),
+            ),
+          ],
         ),
       ),
     );

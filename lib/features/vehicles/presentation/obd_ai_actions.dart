@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart' as legacy_provider;
 
+import '../../../core/config/design.dart';
 import '../../../core/config/theme.dart';
 import '../../../obd_feature/models/obd_reading.dart';
 import '../../../obd_feature/state/dashboard_provider.dart';
@@ -163,7 +164,7 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
               Text(
                 'Based on ${summary.samplesUsed} readings'
                 '${summary.windowSeconds != null ? ' over the last ${summary.windowSeconds}s' : ''}.',
-                style: const TextStyle(fontSize: 11, color: Colors.black45),
+                style: const TextStyle(fontSize: 11, color: Ds.inkMuted),
               ),
             ],
             const SizedBox(height: 12),
@@ -174,7 +175,7 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppColors.hot.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(Ds.rSm),
                 ),
                 child: const Row(
                   children: [
@@ -334,14 +335,14 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
                     onTap: () => _showSheet(_summary!),
                     child: Row(
                       children: [
-                        const Icon(Icons.auto_awesome, size: 14, color: Colors.black45),
+                        const Icon(Icons.auto_awesome, size: 14, color: Ds.inkMuted),
                         const SizedBox(width: 6),
                         Expanded(
                           child: Text(
                             _summary!.summary,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 12, color: Colors.black54),
+                            style: const TextStyle(fontSize: 12, color: Ds.inkSoft),
                           ),
                         ),
                         const Text('Read', style: TextStyle(fontSize: 12, color: AppColors.yamahaBlue)),

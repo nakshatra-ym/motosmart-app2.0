@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Bottom-nav shell for the `CUSTOMER` route branches (home, service,
-/// chatbot, profile).
+import 'app_shell.dart';
+
+/// Navigation shell for the `CUSTOMER` route branches (home, service,
+/// chatbot, profile). Layout — bar on a phone, rail on a tablet — is [AppShell]'s
+/// job, shared with the dealer shell.
 class CustomerShell extends StatelessWidget {
   const CustomerShell({super.key, required this.navigationShell});
 
@@ -10,21 +13,30 @@ class CustomerShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: (index) => navigationShell.goBranch(
-          index,
-          initialLocation: index == navigationShell.currentIndex,
+    return AppShell(
+      navigationShell: navigationShell,
+      tabs: const [
+        ShellTab(
+          icon: Icons.two_wheeler_outlined,
+          selectedIcon: Icons.two_wheeler,
+          label: 'My bike',
         ),
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.two_wheeler_outlined), selectedIcon: Icon(Icons.two_wheeler), label: 'My bike'),
-          NavigationDestination(icon: Icon(Icons.build_outlined), selectedIcon: Icon(Icons.build), label: 'Service'),
-          NavigationDestination(icon: Icon(Icons.chat_bubble_outline), selectedIcon: Icon(Icons.chat_bubble), label: 'Assistant'),
-          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profile'),
-        ],
-      ),
+        ShellTab(
+          icon: Icons.receipt_long_outlined,
+          selectedIcon: Icons.receipt_long,
+          label: 'Service',
+        ),
+        ShellTab(
+          icon: Icons.forum_outlined,
+          selectedIcon: Icons.forum,
+          label: 'Assistant',
+        ),
+        ShellTab(
+          icon: Icons.badge_outlined,
+          selectedIcon: Icons.badge,
+          label: 'Profile',
+        ),
+      ],
     );
   }
 }

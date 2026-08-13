@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/config/design.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../models/bike_model.dart';
 import '../data/public_providers.dart';
@@ -49,7 +50,7 @@ class BikeDetailScreen extends ConsumerWidget {
               Text(
                 model.category,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.black54),
+                style: const TextStyle(color: Ds.inkSoft),
               ),
               const SizedBox(height: 16),
               Text(
@@ -104,7 +105,7 @@ class _SpecRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          Expanded(child: Text(label, style: const TextStyle(color: Colors.black54))),
+          Expanded(child: Text(label, style: const TextStyle(color: Ds.inkSoft))),
           Text(value, style: const TextStyle(fontWeight: FontWeight.w600)),
         ],
       ),

@@ -6,7 +6,7 @@ import '../../../core/auth/api_auth_repository.dart';
 import '../../../core/auth/auth_controller.dart';
 import '../../../core/auth/mock_auth_repository.dart';
 import '../../../core/config/env.dart';
-import '../../../core/config/theme.dart';
+import '../../../core/config/design.dart';
 import '../../../models/enums.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
@@ -78,45 +78,60 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Verify OTP')),
+      backgroundColor: Ds.surface,
+      appBar: AppBar(backgroundColor: Ds.surface, elevation: 0),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.fromLTRB(Ds.s6, 0, Ds.s6, Ds.s6),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
+              constraints: const BoxConstraints(maxWidth: Ds.formMax),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Icon(Icons.sms_outlined, size: 48, color: AppColors.yamahaBlue),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Enter the OTP sent to',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                    Text('Enter code', style: text.displaySmall),
+                    const SizedBox(height: Ds.s2),
+                    // The address is the one fact that matters here, so it reads
+                    // as part of the sentence rather than as a separate field.
+                    Text.rich(
+                      TextSpan(
+                        style: text.bodyMedium,
+                        children: [
+                          const TextSpan(text: 'Sent to '),
+                          TextSpan(
+                            text: widget.identifier,
+                            style: text.bodyMedium?.copyWith(
+                              color: Ds.ink,
+                              fontVariations: const [FontVariation('wght', 600)],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(
-                      widget.identifier,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: Ds.s8),
                     TextFormField(
                       controller: _otpController,
                       keyboardType: TextInputType.number,
+                      autofocus: true,
+                      autofillHints: const [AutofillHints.oneTimeCode],
                       // Cognito's passwordless email codes are 8 digits; the
                       // seeded demo accounts use a 6-digit one. Capping at 6
                       // silently truncated every real code.
                       maxLength: _maxOtpLength,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 24, letterSpacing: 6),
-                      decoration: const InputDecoration(counterText: ''),
+                      // Wide tracking and tabular digits: a code is read back in
+                      // groups, and the field must not shift as it fills.
+                      style: Ds.figure(30, weight: 620).copyWith(letterSpacing: 10),
+                      decoration: const InputDecoration(
+                        counterText: '',
+                        hintText: '––––––––',
+                        contentPadding: EdgeInsets.symmetric(vertical: Ds.s5),
+                      ),
                       validator: (value) {
                         final otp = value?.trim() ?? '';
                         if (otp.length < _minOtpLength || otp.length > _maxOtpLength) {
@@ -126,40 +141,48 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                       },
                       onFieldSubmitted: (_) => _verify(),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Ds.s3),
                     // Only the demo accounts accept the canned code; a real
                     // account's code arrives by email, so advertising it there
                     // would just be wrong.
-                    if (_acceptsDemoOtp)
-                      Text(
-                        'Demo OTP: ${MockAuthRepository.demoOtp}',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.black45, fontSize: 12),
-                      )
-                    else
-                      const Text(
-                        'The code was emailed to you — check spam too.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.black45, fontSize: 12),
-                      ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
+                    Row(
+                      children: [
+                        Icon(
+                          _acceptsDemoOtp
+                              ? Icons.science_outlined
+                              : Icons.mail_outline,
+                          size: 14,
+                          color: _acceptsDemoOtp ? Ds.inkMuted : Ds.positive,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            _acceptsDemoOtp
+                                ? 'Seeded account — the code is ${MockAuthRepository.demoOtp}.'
+                                : 'Check spam if it has not arrived.',
+                            style: text.bodySmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: Ds.s6),
+                    FilledButton(
                       onPressed: _isSubmitting ? null : _verify,
                       child: _isSubmitting
                           ? const SizedBox(
-                              height: 20,
-                              width: 20,
+                              height: 18,
+                              width: 18,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Verify & Continue'),
+                          : const Text('Verify'),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: Ds.s2),
                     TextButton(
                       onPressed: _isResending ? null : _resend,
-                      child: Text(_isResending ? 'Resending…' : 'Resend OTP'),
+                      child: Text(_isResending ? 'Sending…' : 'Send a new code'),
                     ),
                   ],
                 ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/config/design.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -113,7 +115,7 @@ class _ExchangeValueScreenState extends ConsumerState<ExchangeValueScreen> {
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       children: [
-                        const Text('Estimated exchange value', style: TextStyle(color: Colors.black54)),
+                        const Text('Estimated exchange value', style: TextStyle(color: Ds.inkSoft)),
                         const SizedBox(height: 8),
                         Text(
                           NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 0)
@@ -127,7 +129,7 @@ class _ExchangeValueScreenState extends ConsumerState<ExchangeValueScreen> {
                         Text(
                           _result!.note,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.black54, fontSize: 12),
+                          style: const TextStyle(color: Ds.inkSoft, fontSize: 12),
                         ),
                       ],
                     ),

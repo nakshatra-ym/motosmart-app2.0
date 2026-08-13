@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/config/design.dart';
 import '../../../core/config/theme.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -82,7 +83,7 @@ class TestRidesTab extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Text(booking.mobile, style: const TextStyle(color: Colors.black54)),
+                      Text(booking.mobile, style: const TextStyle(color: Ds.inkSoft)),
                       const SizedBox(height: 6),
                       Text(
                         bikeName(booking.bikeModelId) ?? 'Unknown model',
@@ -90,7 +91,7 @@ class TestRidesTab extends ConsumerWidget {
                       ),
                       Text(
                         '${DateFormat('d MMM yyyy').format(booking.preferredDate)} · ${booking.preferredTime}',
-                        style: const TextStyle(color: Colors.black54, fontSize: 12),
+                        style: const TextStyle(color: Ds.inkSoft, fontSize: 12),
                       ),
                       if (booking.status == TestRideStatus.requested ||
                           booking.status == TestRideStatus.confirmed) ...[
@@ -146,7 +147,7 @@ class _StatusChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(Ds.rSm),
       ),
       child: Text(status.label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
     );

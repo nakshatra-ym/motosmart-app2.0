@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/config/design.dart';
 import '../../../core/config/theme.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -84,7 +85,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                             BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
                         decoration: BoxDecoration(
                           color: isUser ? AppColors.yamahaBlue : Colors.black.withValues(alpha: 0.06),
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(Ds.rMd),
                         ),
                         child: Text(
                           m.content,
@@ -100,7 +101,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           if (_isSending)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 4),
-              child: Text('Assistant is typing…', style: TextStyle(fontSize: 12, color: Colors.black45)),
+              child: Text('Assistant is typing…', style: TextStyle(fontSize: 12, color: Ds.inkMuted)),
             ),
           SafeArea(
             top: false,

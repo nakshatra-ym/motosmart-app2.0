@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/config/design.dart';
 import '../../../core/config/theme.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
@@ -63,7 +64,7 @@ class NotificationsScreen extends ConsumerWidget {
                         : AppColors.yamahaBlue.withValues(alpha: 0.1),
                     child: Icon(
                       _iconFor(n.type),
-                      color: n.isRead ? Colors.black45 : AppColors.yamahaBlue,
+                      color: n.isRead ? Ds.inkMuted : AppColors.yamahaBlue,
                       size: 20,
                     ),
                   ),
@@ -74,7 +75,7 @@ class NotificationsScreen extends ConsumerWidget {
                   subtitle: Text(n.body),
                   trailing: Text(
                     DateFormat('d MMM, h:mm a').format(n.createdAt),
-                    style: const TextStyle(fontSize: 11, color: Colors.black45),
+                    style: const TextStyle(fontSize: 11, color: Ds.inkMuted),
                   ),
                   onTap: () => _onTap(context, ref, n),
                 );
