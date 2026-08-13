@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/config/theme.dart';
+import '../../core/widgets/app_visuals.dart';
 import '../state/dashboard_provider.dart';
 import '../widgets/health_badge.dart';
 import '../widgets/telemetry_grid.dart';
@@ -12,9 +13,6 @@ class CustomerDashboardScreen extends StatelessWidget {
   const CustomerDashboardScreen({super.key});
 
   void _openConnectScreen(BuildContext context) {
-    // Re-provide the SAME DashboardProvider instance to the pushed route —
-    // it lives above this screen in the tree only, so a plain
-    // Navigator.push would land outside its scope without this.
     final dashboard = context.read<DashboardProvider>();
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -31,82 +29,107 @@ class CustomerDashboardScreen extends StatelessWidget {
     final dashboard = context.watch<DashboardProvider>();
     final reading = dashboard.latestReading;
     final health = dashboard.health;
-
-    // Readings come from the bike, never from a generator. Until an ELM327 is
-    // connected there is nothing honest to show, so the screen asks for the
-    // device instead of displaying zeroes or invented values.
     final hasReadings = dashboard.isLive;
+    final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Bike — Health'),
-        actions: [
-          IconButton(
-            tooltip: dashboard.isLive ? 'Connected — ${dashboard.liveDeviceName}' : 'Connect OBD device',
-            icon: Icon(dashboard.isLive ? Icons.bluetooth_connected : Icons.bluetooth),
-            onPressed: () => _openConnectScreen(context),
-          ),
-        ],
-      ),
-      body: hasReadings
-          ? RefreshIndicator(
-              onRefresh: () async {},
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  Card(
-                    color: AppColors.statusClosedWon.withValues(alpha: 0.1),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: ListTile(
-                      dense: true,
-                      leading: const Icon(Icons.bluetooth_connected, color: AppColors.statusClosedWon),
-                      title: Text(
-                        'Live data — ${dashboard.liveDeviceName}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: AppColors.ink,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                        ),
-                      ),
-                      subtitle: const Text(
-                        'Bluetooth connected',
-                        style: TextStyle(color: AppColors.inkMuted, fontSize: 12.5),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  HealthBadge(health: health),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Live Telemetry',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  TelemetryGrid(reading: reading),
-                  if (reading.activeDtcCodes.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    Text(
-                      'Active Alerts',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    ...reading.activeDtcCodes.map((code) => AlertCard(
-                          dtcCode: code,
-                          aiExplanation: dashboard.aiExplanation,
-                          aiLoading: dashboard.aiLoading,
-                        )),
-                  ],
-                  const SizedBox(height: 20),
-                ],
-              ),
-            )
-          : _ConnectPrompt(
-              isConnecting: dashboard.isConnecting,
-              error: dashboard.connectionError,
-              onConnect: () => _openConnectScreen(context),
+    return AppPageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: const Text('My Bike — Health'),
+          actions: [
+            IconButton(
+              tooltip: dashboard.isLive
+                  ? 'Connected — ${dashboard.liveDeviceName}'
+                  : 'Connect OBD device',
+              icon: Icon(dashboard.isLive ? Icons.bluetooth_connected : Icons.bluetooth),
+              onPressed: () => _openConnectScreen(context),
             ),
+          ],
+        ),
+        body: hasReadings
+            ? ListView(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+                children: [
+                  FadeSlideIn(
+                    child: Row(
+                      children: [
+                        const FloatingOrb(color: AppColors.statusClosedWon, size: 9),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'LIVE FROM BIKE',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: AppColors.statusClosedWon,
+                                  letterSpacing: 1.8,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                dashboard.liveDeviceName ?? 'Bluetooth',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  color: AppColors.ink,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          'Updating',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: AppColors.inkMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  FadeSlideIn(
+                    delay: const Duration(milliseconds: 40),
+                    child: HealthBadge(health: health),
+                  ),
+                  const SizedBox(height: 22),
+                  FadeSlideIn(
+                    delay: const Duration(milliseconds: 80),
+                    child: Text(
+                      'Live telemetry',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  FadeSlideIn(
+                    delay: const Duration(milliseconds: 100),
+                    child: TelemetryGrid(reading: reading),
+                  ),
+                  if (reading.activeDtcCodes.isNotEmpty) ...[
+                    const SizedBox(height: 20),
+                    Text(
+                      'Active alerts',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+                    ...reading.activeDtcCodes.map(
+                      (code) => AlertCard(
+                        dtcCode: code,
+                        aiExplanation: dashboard.aiExplanation,
+                        aiLoading: dashboard.aiLoading,
+                      ),
+                    ),
+                  ],
+                ],
+              )
+            : _ConnectPrompt(
+                isConnecting: dashboard.isConnecting,
+                error: dashboard.connectionError,
+                onConnect: () => _openConnectScreen(context),
+              ),
+      ),
     );
   }
 }
