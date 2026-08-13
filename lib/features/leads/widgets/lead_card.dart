@@ -29,74 +29,51 @@ class LeadCard extends ConsumerWidget {
       }
     }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        border: Border.all(color: AppColors.border, width: 1.2),
-        boxShadow: AppTheme.softShadow,
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: GlassPanel(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      lead.customerName,
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    lead.customerName,
+                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  if (lead.aiIntent != null) IntentBadge(intent: lead.aiIntent!, compact: true),
-                ],
-              ),
-              const SizedBox(height: 6),
-              Text(
-                lead.mobile,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: AppColors.inkMuted,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
                 ),
-              ),
-              if (bikeName != null) ...[
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const AppIconWell(
-                      icon: Icons.two_wheeler_rounded,
-                      size: 28,
-                      iconSize: 14,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      bikeName,
-                      style: theme.textTheme.bodySmall?.copyWith(color: AppColors.inkMuted),
-                    ),
-                  ],
-                ),
+                if (lead.aiIntent != null) IntentBadge(intent: lead.aiIntent!, compact: true),
               ],
-              const SizedBox(height: 12),
+            ),
+            const SizedBox(height: 6),
+            Text(lead.mobile, style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600)),
+            if (bikeName != null) ...[
+              const SizedBox(height: 8),
               Row(
                 children: [
-                  StatusChip(status: lead.status),
-                  const Spacer(),
-                  if (lead.tentativePurchaseDate != null)
-                    Text(
-                      DateFormat('d MMM').format(lead.tentativePurchaseDate!),
-                      style: theme.textTheme.labelSmall,
-                    ),
+                  const AppIconWell(icon: Icons.two_wheeler_rounded, size: 28, iconSize: 14),
+                  const SizedBox(width: 8),
+                  Text(bikeName, style: theme.textTheme.bodySmall),
                 ],
               ),
             ],
-          ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                StatusChip(status: lead.status),
+                const Spacer(),
+                if (lead.tentativePurchaseDate != null)
+                  Text(
+                    DateFormat('d MMM').format(lead.tentativePurchaseDate!),
+                    style: theme.textTheme.labelSmall,
+                  ),
+              ],
+            ),
+          ],
         ),
       ),
     );

@@ -65,19 +65,20 @@ class AiMessageBubble extends StatelessWidget {
                 ),
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: _isUser ? AppColors.yamahaBlue : AppColors.surface,
+                  color: _isUser ? AppColors.yamahaBlue : const Color(0x14FFFFFF),
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(18),
                     topRight: const Radius.circular(18),
                     bottomLeft: Radius.circular(_isUser ? 18 : 6),
                     bottomRight: Radius.circular(_isUser ? 6 : 18),
                   ),
-                  border: _isUser ? null : Border.all(color: AppColors.border),
+                  border: _isUser ? null : Border.all(color: AppColors.glassBorder),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.ink.withValues(alpha: _isUser ? 0.1 : 0.04),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
+                      color: (_isUser ? AppColors.yamahaBlue : Colors.black)
+                          .withValues(alpha: _isUser ? 0.35 : 0.25),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
                     ),
                   ],
                 ),

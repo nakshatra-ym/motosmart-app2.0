@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../config/theme.dart';
+import 'app_visuals.dart';
 
 class EmptyState extends StatelessWidget {
   const EmptyState({
@@ -22,52 +23,34 @@ class EmptyState extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(36),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 72,
-              height: 72,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.yamahaBlue.withValues(alpha: 0.18),
-                    AppColors.accent.withValues(alpha: 0.1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: AppColors.yamahaBlue.withValues(alpha: 0.12)),
-              ),
-              child: Icon(icon, size: 30, color: AppColors.yamahaBlue),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: AppColors.ink,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            if (subtitle != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                subtitle!,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.inkMuted,
-                  height: 1.5,
-                ),
-              ),
-            ],
-            if (action != null) ...[
+        padding: const EdgeInsets.all(28),
+        child: GlassPanel(
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 36),
+          glow: AppColors.yamahaBlue,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppIconWell(icon: icon, size: 72, iconSize: 32, filled: true),
               const SizedBox(height: 22),
-              action!,
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 10),
+                Text(
+                  subtitle!,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.inkMuted, height: 1.5),
+                ),
+              ],
+              if (action != null) ...[
+                const SizedBox(height: 22),
+                action!,
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

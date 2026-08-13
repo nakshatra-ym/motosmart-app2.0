@@ -20,148 +20,289 @@ class DealerDashboardScreen extends ConsumerWidget {
     final employee = ref.watch(authControllerProvider).valueOrNull?.employee;
     final unreadCount = ref.watch(unreadNotificationsCountProvider);
     final theme = Theme.of(context);
+    final name = employee?.name.split(' ').first ?? 'Dealer';
 
     return AppPageBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                employee == null ? 'Dashboard' : 'Hi, ${employee.name.split(' ').first}',
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              Text(
-                'Dealer desk',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: AppColors.inkMuted,
-                  letterSpacing: 0.6,
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            IconButton(
-              onPressed: () => context.push('/dealer/dashboard/notifications'),
-              icon: Badge(
-                label: Text('$unreadCount'),
-                isLabelVisible: unreadCount > 0,
-                child: const Icon(Icons.notifications_none_rounded),
-              ),
-            ),
-          ],
-        ),
-        body: RefreshIndicator(
-          color: AppColors.yamahaBlue,
-          onRefresh: () async => ref.invalidate(dashboardSummaryProvider),
-          child: AsyncValueWidget<DashboardSummary>(
-            value: summary,
-            onRetry: () => ref.invalidate(dashboardSummaryProvider),
-            data: (data) => ListView(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: _StatCard(
-                        label: 'New leads',
-                        value: data.newLeadsCount,
-                        color: AppColors.statusNew,
-                        icon: Icons.person_add_alt_1_rounded,
+        body: SafeArea(
+          child: RefreshIndicator(
+            color: AppColors.yamahaBlue,
+            backgroundColor: AppColors.surface,
+            onRefresh: () async => ref.invalidate(dashboardSummaryProvider),
+            child: AsyncValueWidget<DashboardSummary>(
+              value: summary,
+              onRetry: () => ref.invalidate(dashboardSummaryProvider),
+              data: (data) => CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 12, 12, 0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: FadeSlideIn(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'COMMAND CENTER',
+                                        style: theme.textTheme.labelSmall?.copyWith(
+                                          color: AppColors.yamahaBlue,
+                                          letterSpacing: 2.2,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const FloatingOrb(color: AppColors.accent, size: 8),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Hey, $name',
+                                    style: theme.textTheme.headlineMedium?.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Your dealership pulse — live.',
+                                    style: theme.textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () => context.push('/dealer/dashboard/notifications'),
+                            icon: Badge(
+                              label: Text('$unreadCount'),
+                              isLabelVisible: unreadCount > 0,
+                              child: const Icon(Icons.notifications_none_rounded),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _StatCard(
-                        label: 'Follow-ups',
-                        value: data.followUpLeadsCount,
-                        color: AppColors.statusFollowUp,
-                        icon: Icons.phone_forwarded_rounded,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _StatCard(
-                        label: 'Hot leads (AI)',
-                        value: data.hotLeadsCount,
-                        color: AppColors.hot,
-                        icon: Icons.local_fire_department_rounded,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _StatCard(
-                        label: 'Closed this month',
-                        value: data.closedThisMonthCount,
-                        color: AppColors.statusClosedWon,
-                        icon: Icons.task_alt_rounded,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () => context.push('/dealer/leads/new'),
-                    icon: const Icon(Icons.add_rounded, size: 20),
-                    label: const Text('Capture new enquiry'),
                   ),
-                ),
-                const SizedBox(height: 28),
-                Text("Today's follow-ups", style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 12),
-                if (data.todaysFollowups.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    child: EmptyState(
-                      icon: Icons.check_circle_outline_rounded,
-                      title: 'Nothing due today',
-                      subtitle: 'New and overdue follow-ups will show up here.',
-                    ),
-                  )
-                else
-                  ...data.todaysFollowups.map(
-                    (item) => Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceElevated,
-                        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-                        border: Border.all(color: AppColors.border, width: 1.2),
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        leading: AppIconWell(
-                          icon: item.followup.isOverdue
-                              ? Icons.warning_amber_rounded
-                              : Icons.event_available_rounded,
-                          size: 44,
-                          iconSize: 20,
-                          color: item.followup.isOverdue ? AppColors.hot : AppColors.yamahaBlue,
-                        ),
-                        title: Text(item.leadCustomerName, style: theme.textTheme.titleSmall),
-                        subtitle: Text(
-                          '${item.followup.nextAction} · ${item.leadMobile}',
-                          style: theme.textTheme.bodySmall,
-                        ),
-                        trailing: Text(
-                          item.followup.isOverdue ? 'Overdue' : 'Today',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: item.followup.isOverdue ? AppColors.hot : AppColors.statusFollowUp,
-                            fontWeight: FontWeight.w700,
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(16, 22, 16, 28),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        // Bento row 1
+                        FadeSlideIn(
+                          delay: const Duration(milliseconds: 60),
+                          child: IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  flex: 6,
+                                  child: GlassPanel(
+                                    glow: AppColors.yamahaBlue,
+                                    padding: const EdgeInsets.all(20),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const AppIconWell(
+                                              icon: Icons.bolt_rounded,
+                                              size: 40,
+                                              iconSize: 20,
+                                              filled: true,
+                                            ),
+                                            const Spacer(),
+                                            Text(
+                                              'LIVE',
+                                              style: theme.textTheme.labelSmall?.copyWith(
+                                                color: AppColors.accent,
+                                                letterSpacing: 1.6,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 18),
+                                        Text('Pipeline heat', style: theme.textTheme.titleMedium),
+                                        const SizedBox(height: 6),
+                                        AnimatedMetric(
+                                          value: data.hotLeadsCount,
+                                          style: theme.textTheme.displaySmall?.copyWith(
+                                            fontSize: 52,
+                                            fontWeight: FontWeight.w700,
+                                            color: AppColors.ink,
+                                          ),
+                                        ),
+                                        Text(
+                                          'hot AI leads ready to close',
+                                          style: theme.textTheme.bodySmall,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  flex: 5,
+                                  child: Column(
+                                    children: [
+                                      Expanded(
+                                        child: _MiniMetric(
+                                          label: 'New',
+                                          value: data.newLeadsCount,
+                                          color: AppColors.statusNew,
+                                          icon: Icons.person_add_alt_1_rounded,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Expanded(
+                                        child: _MiniMetric(
+                                          label: 'Follow-ups',
+                                          value: data.followUpLeadsCount,
+                                          color: AppColors.statusFollowUp,
+                                          icon: Icons.phone_forwarded_rounded,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        onTap: () => context.push('/dealer/leads/${item.followup.leadId}'),
-                      ),
+                        const SizedBox(height: 12),
+                        FadeSlideIn(
+                          delay: const Duration(milliseconds: 120),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: _MiniMetric(
+                                  label: 'Closed',
+                                  value: data.closedThisMonthCount,
+                                  color: AppColors.statusClosedWon,
+                                  icon: Icons.task_alt_rounded,
+                                  tall: false,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                flex: 2,
+                                child: GlassPanel(
+                                  glow: AppColors.yamahaRed,
+                                  onTap: () => context.push('/dealer/leads/new'),
+                                  padding: const EdgeInsets.all(18),
+                                  child: Row(
+                                    children: [
+                                      const AppIconWell(
+                                        icon: Icons.add_rounded,
+                                        size: 44,
+                                        iconSize: 24,
+                                        color: AppColors.yamahaRed,
+                                        filled: true,
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Capture enquiry',
+                                              style: theme.textTheme.titleMedium?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            Text(
+                                              'One tap → new lead',
+                                              style: theme.textTheme.bodySmall,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const Icon(Icons.north_east_rounded, color: AppColors.inkFaint),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+                        FadeSlideIn(
+                          delay: const Duration(milliseconds: 180),
+                          child: Text(
+                            "Today's follow-ups",
+                            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        if (data.todaysFollowups.isEmpty)
+                          const EmptyState(
+                            icon: Icons.check_circle_outline_rounded,
+                            title: 'Inbox zero',
+                            subtitle: 'Nothing due today. New and overdue follow-ups land here.',
+                          )
+                        else
+                          ...data.todaysFollowups.asMap().entries.map((entry) {
+                            final item = entry.value;
+                            return FadeSlideIn(
+                              delay: Duration(milliseconds: 200 + entry.key * 40),
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: GlassPanel(
+                                  onTap: () => context.push('/dealer/leads/${item.followup.leadId}'),
+                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                  child: Row(
+                                    children: [
+                                      AppIconWell(
+                                        icon: item.followup.isOverdue
+                                            ? Icons.warning_amber_rounded
+                                            : Icons.event_available_rounded,
+                                        size: 44,
+                                        iconSize: 20,
+                                        color: item.followup.isOverdue
+                                            ? AppColors.hot
+                                            : AppColors.yamahaBlue,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              item.leadCustomerName,
+                                              style: theme.textTheme.titleSmall?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            Text(
+                                              '${item.followup.nextAction} · ${item.leadMobile}',
+                                              style: theme.textTheme.bodySmall,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Text(
+                                        item.followup.isOverdue ? 'OVERDUE' : 'TODAY',
+                                        style: theme.textTheme.labelSmall?.copyWith(
+                                          color: item.followup.isOverdue
+                                              ? AppColors.hot
+                                              : AppColors.statusFollowUp,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                      ]),
                     ),
                   ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -170,52 +311,40 @@ class DealerDashboardScreen extends ConsumerWidget {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  const _StatCard({
+class _MiniMetric extends StatelessWidget {
+  const _MiniMetric({
     required this.label,
     required this.value,
     required this.color,
     required this.icon,
+    this.tall = true,
   });
 
   final String label;
   final int value;
   final Color color;
   final IconData icon;
+  final bool tall;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        border: Border.all(color: AppColors.border, width: 1.2),
-        boxShadow: AppTheme.softShadow,
-      ),
+    return GlassPanel(
+      glow: color,
+      padding: EdgeInsets.all(tall ? 16 : 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppIconWell(icon: icon, size: 40, iconSize: 18, color: color),
-          const SizedBox(height: 14),
-          Text(
-            '$value',
-            style: theme.textTheme.headlineMedium?.copyWith(
+          AppIconWell(icon: icon, size: 34, iconSize: 16, color: color),
+          if (tall) const Spacer() else const SizedBox(height: 12),
+          AnimatedMetric(
+            value: value,
+            style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w800,
               letterSpacing: -1,
-              fontSize: 30,
             ),
           ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: AppColors.inkMuted,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text(label, style: theme.textTheme.labelSmall?.copyWith(color: AppColors.inkMuted)),
         ],
       ),
     );

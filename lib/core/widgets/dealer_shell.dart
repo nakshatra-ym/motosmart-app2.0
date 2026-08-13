@@ -7,16 +7,8 @@ import 'package:go_router/go_router.dart';
 import '../../features/notifications/data/notification_providers.dart';
 import '../config/theme.dart';
 
-/// Bottom-nav shell for the `DEALER_STAFF` route branches (dashboard, leads,
-/// tickets, profile). [StatefulShellRoute.indexedStack] keeps each
-/// branch's navigation stack alive when switching tabs.
-///
-/// Also refreshes notifications — the Firebase-free "push" PLAN_frontend.md
-/// describes: on app resume, and on a light foreground poll while this
-/// shell is on screen. The poll is a plain `Timer.periodic` cancelled in
-/// [dispose], not a Riverpod stream provider — that would leave a `Timer`
-/// whose cancellation is GC-timed rather than deterministic, which trips
-/// the widget-test harness's pending-timer leak check.
+/// Bottom-nav shell for the `DEALER_STAFF` route branches.
+/// Tab labels & order unchanged.
 class DealerShell extends ConsumerStatefulWidget {
   const DealerShell({super.key, required this.navigationShell});
 
@@ -56,46 +48,50 @@ class _DealerShellState extends ConsumerState<DealerShell> with WidgetsBindingOb
   Widget build(BuildContext context) {
     return Scaffold(
       body: widget.navigationShell,
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
-          border: const Border(top: BorderSide(color: AppColors.border, width: 1.2)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.brandInk.withValues(alpha: 0.06),
-              blurRadius: 20,
-              offset: const Offset(0, -4),
+      bottomNavigationBar: ClipRect(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0xE6080B12),
+            border: Border(
+              top: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
             ),
-          ],
-        ),
-        child: NavigationBar(
-          selectedIndex: widget.navigationShell.currentIndex,
-          onDestinationSelected: (index) => widget.navigationShell.goBranch(
-            index,
-            initialLocation: index == widget.navigationShell.currentIndex,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.yamahaBlue.withValues(alpha: 0.12),
+                blurRadius: 28,
+                offset: const Offset(0, -8),
+              ),
+            ],
           ),
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.grid_view_outlined),
-              selectedIcon: Icon(Icons.grid_view_rounded),
-              label: 'Dashboard',
+          child: NavigationBar(
+            selectedIndex: widget.navigationShell.currentIndex,
+            onDestinationSelected: (index) => widget.navigationShell.goBranch(
+              index,
+              initialLocation: index == widget.navigationShell.currentIndex,
             ),
-            NavigationDestination(
-              icon: Icon(Icons.groups_outlined),
-              selectedIcon: Icon(Icons.groups_rounded),
-              label: 'Leads',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.confirmation_number_outlined),
-              selectedIcon: Icon(Icons.confirmation_number_rounded),
-              label: 'Tickets',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.person_outline_rounded),
-              selectedIcon: Icon(Icons.person_rounded),
-              label: 'Profile',
-            ),
-          ],
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.grid_view_outlined),
+                selectedIcon: Icon(Icons.grid_view_rounded),
+                label: 'Dashboard',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.groups_outlined),
+                selectedIcon: Icon(Icons.groups_rounded),
+                label: 'Leads',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.confirmation_number_outlined),
+                selectedIcon: Icon(Icons.confirmation_number_rounded),
+                label: 'Tickets',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.person_outline_rounded),
+                selectedIcon: Icon(Icons.person_rounded),
+                label: 'Profile',
+              ),
+            ],
+          ),
         ),
       ),
     );

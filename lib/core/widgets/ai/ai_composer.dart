@@ -22,12 +22,12 @@ class AiComposer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
+      color: AppColors.surfaceElevated,
       elevation: 0,
       child: DecoratedBox(
         decoration: const BoxDecoration(
-          color: AppColors.surface,
-          border: Border(top: BorderSide(color: AppColors.border)),
+          color: AppColors.surfaceElevated,
+          border: Border(top: BorderSide(color: AppColors.glassBorder)),
         ),
         child: SafeArea(
           top: false,
@@ -60,18 +60,18 @@ class AiComposer extends StatelessWidget {
                           fontSize: 15,
                         ),
                         filled: true,
-                        fillColor: AppColors.canvas,
+                        fillColor: const Color(0x14FFFFFF),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: AppColors.border),
+                          borderSide: const BorderSide(color: AppColors.glassBorder),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: AppColors.border),
+                          borderSide: const BorderSide(color: AppColors.glassBorder),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -99,7 +99,7 @@ class AiComposer extends StatelessWidget {
                     opacity: enabled ? 1 : 0.45,
                     duration: const Duration(milliseconds: 160),
                     child: Material(
-                      color: AppColors.accent,
+                      color: AppColors.yamahaBlue,
                       borderRadius: BorderRadius.circular(14),
                       child: InkWell(
                         onTap: enabled ? onSend : null,

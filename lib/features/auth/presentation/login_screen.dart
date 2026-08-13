@@ -43,109 +43,53 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final size = MediaQuery.sizeOf(context);
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Atmospheric brand plane
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    AppColors.brandInk,
-                    const Color(0xFF121A2E),
-                    AppColors.canvas,
-                    AppColors.canvas,
-                  ],
-                  stops: const [0.0, 0.5, 0.5, 1.0],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: -size.width * 0.2,
-            right: -size.width * 0.25,
-            child: Container(
-              width: size.width * 0.7,
-              height: size.width * 0.7,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.yamahaBlue.withValues(alpha: 0.45),
-                    AppColors.yamahaBlue.withValues(alpha: 0.0),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: size.height * 0.18,
-            left: -40,
-            child: Container(
-              width: 160,
-              height: 160,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.yamahaRed.withValues(alpha: 0.28),
-                    AppColors.yamahaRed.withValues(alpha: 0.0),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 28),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 440),
-                  child: Column(
-                    children: [
-                      const MotospotMark(light: true),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Dealer & customer sign-in',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.65),
-                        ),
+    return AppPageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 28),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 440),
+                child: Column(
+                  children: [
+                    const FadeSlideIn(child: MotospotMark()),
+                    const SizedBox(height: 12),
+                    FadeSlideIn(
+                      delay: const Duration(milliseconds: 80),
+                      child: Text(
+                        'Dealer & customer access',
+                        style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.inkMuted),
                       ),
-                      const SizedBox(height: 32),
-                      Container(
+                    ),
+                    const SizedBox(height: 28),
+                    FadeSlideIn(
+                      delay: const Duration(milliseconds: 140),
+                      child: GlassPanel(
+                        glow: AppColors.yamahaBlue,
                         padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceElevated,
-                          borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-                          border: Border.all(color: AppColors.border),
-                          boxShadow: AppTheme.softShadow,
-                        ),
                         child: Form(
                           key: _formKey,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                'Welcome back',
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
+                                'Sign in',
+                                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
                               ),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: 8),
                               Text(
-                                'Enter your work email or mobile to get an OTP.',
-                                style: theme.textTheme.bodySmall,
+                                'Drop your work email or mobile — we’ll beam an OTP.',
+                                style: theme.textTheme.bodyMedium,
                               ),
-                              const SizedBox(height: 20),
+                              const SizedBox(height: 22),
                               TextFormField(
                                 controller: _identifierController,
                                 keyboardType: TextInputType.emailAddress,
                                 textInputAction: TextInputAction.done,
+                                style: const TextStyle(color: AppColors.ink),
                                 decoration: const InputDecoration(
                                   labelText: 'Work email or mobile number',
                                   prefixIcon: Icon(Icons.alternate_email_rounded),
@@ -170,21 +114,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           color: Colors.white,
                                         ),
                                       )
-                                    : const Text('Send OTP'),
+                                    : const Text('Continue with OTP'),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      Container(
-                        width: double.infinity,
+                    ),
+                    const SizedBox(height: 14),
+                    FadeSlideIn(
+                      delay: const Duration(milliseconds: 200),
+                      child: GlassPanel(
                         padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceElevated.withValues(alpha: 0.9),
-                          borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-                          border: Border.all(color: AppColors.border),
-                        ),
                         child: Text(
                           'Real OTP (email):\n'
                           'Dealer — ijklmnop7417@gmail.com\n'
@@ -198,13 +139,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

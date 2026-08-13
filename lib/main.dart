@@ -18,7 +18,7 @@ class MotoSmartApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Motospot',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
+      theme: AppTheme.dark,
       routerConfig: router,
     );
   }

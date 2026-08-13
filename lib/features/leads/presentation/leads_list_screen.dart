@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/config/theme.dart';
+import '../../../core/widgets/app_visuals.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../models/lead.dart';
@@ -33,136 +34,137 @@ class _LeadsListScreenState extends ConsumerState<LeadsListScreen> {
     final segment = ref.watch(leadsSegmentProvider);
     final isLeadsSegment = segment == LeadsSegment.leads;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Leads')),
-      floatingActionButton: isLeadsSegment
-          ? FloatingActionButton(
-              onPressed: () => context.push('/dealer/leads/new'),
-              child: const Icon(Icons.add),
-            )
-          : null,
-      body: Column(
-        children: [
-            Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-            child: SegmentedButton<LeadsSegment>(
-              style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.resolveWith((states) {
-                  if (states.contains(WidgetState.selected)) {
-                    return AppColors.yamahaBlue.withValues(alpha: 0.1);
-                  }
-                  return AppColors.surface;
-                }),
-                foregroundColor: WidgetStateProperty.resolveWith((states) {
-                  if (states.contains(WidgetState.selected)) {
-                    return AppColors.yamahaBlue;
-                  }
-                  return AppColors.inkMuted;
-                }),
-                side: const WidgetStatePropertyAll(BorderSide(color: AppColors.border)),
+    return AppPageBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        floatingActionButton: isLeadsSegment
+            ? FloatingActionButton(
+                onPressed: () => context.push('/dealer/leads/new'),
+                child: const Icon(Icons.add),
+              )
+            : null,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Leads',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ),
               ),
-              segments: const [
-                ButtonSegment(
-                  value: LeadsSegment.leads,
-                  label: Text('Leads'),
-                  icon: Icon(Icons.groups_outlined),
-                ),
-                ButtonSegment(
-                  value: LeadsSegment.testRides,
-                  label: Text('Test rides'),
-                  icon: Icon(Icons.two_wheeler_outlined),
-                ),
-              ],
-              selected: {segment},
-              onSelectionChanged: (selection) =>
-                  ref.read(leadsSegmentProvider.notifier).state = selection.first,
-            ),
-          ),
-          if (isLeadsSegment) ...[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search by name or mobile number',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: _searchController.text.isEmpty
-                      ? null
-                      : IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () {
-                            _searchController.clear();
-                            ref.read(leadSearchQueryProvider.notifier).state = '';
-                          },
-                        ),
-                ),
-                onChanged: (value) => ref.read(leadSearchQueryProvider.notifier).state = value,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: SizedBox(
-                height: 36,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    _TabChip(
-                      label: 'All',
-                      selected: selectedTab == LeadTab.all,
-                      onSelected: () => ref.read(leadTabProvider.notifier).state = LeadTab.all,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                child: SegmentedButton<LeadsSegment>(
+                  segments: const [
+                    ButtonSegment(
+                      value: LeadsSegment.leads,
+                      label: Text('Leads'),
+                      icon: Icon(Icons.groups_outlined),
                     ),
-                    _TabChip(
-                      label: 'New',
-                      selected: selectedTab == LeadTab.newLead,
-                      onSelected: () => ref.read(leadTabProvider.notifier).state = LeadTab.newLead,
-                    ),
-                    _TabChip(
-                      label: 'Follow-up',
-                      selected: selectedTab == LeadTab.followUp,
-                      onSelected: () => ref.read(leadTabProvider.notifier).state = LeadTab.followUp,
-                    ),
-                    _TabChip(
-                      label: 'Closed',
-                      selected: selectedTab == LeadTab.closed,
-                      onSelected: () => ref.read(leadTabProvider.notifier).state = LeadTab.closed,
+                    ButtonSegment(
+                      value: LeadsSegment.testRides,
+                      label: Text('Test rides'),
+                      icon: Icon(Icons.two_wheeler_outlined),
                     ),
                   ],
+                  selected: {segment},
+                  onSelectionChanged: (selection) =>
+                      ref.read(leadsSegmentProvider.notifier).state = selection.first,
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: AsyncValueWidget<List<Lead>>(
-                value: leads,
-                onRetry: () => ref.invalidate(leadsListProvider),
-                data: (data) {
-                  if (data.isEmpty) {
-                    return const EmptyState(
-                      icon: Icons.inbox_outlined,
-                      title: 'No leads here yet',
-                      subtitle: 'New enquiries you capture will show up in this list.',
-                    );
-                  }
-                  return RefreshIndicator(
-                    onRefresh: () async => ref.invalidate(leadsListProvider),
-                    child: ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        final lead = data[index];
-                        return LeadCard(
-                          lead: lead,
-                          onTap: () => context.push('/dealer/leads/${lead.id}'),
-                        );
-                      },
+              if (isLeadsSegment) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                  child: TextField(
+                    controller: _searchController,
+                    style: const TextStyle(color: AppColors.ink),
+                    decoration: InputDecoration(
+                      hintText: 'Search by name or mobile number',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _searchController.text.isEmpty
+                          ? null
+                          : IconButton(
+                              icon: const Icon(Icons.close),
+                              onPressed: () {
+                                _searchController.clear();
+                                ref.read(leadSearchQueryProvider.notifier).state = '';
+                              },
+                            ),
                     ),
-                  );
-                },
-              ),
-            ),
-          ] else
-            const Expanded(child: TestRidesTab()),
-        ],
+                    onChanged: (value) => ref.read(leadSearchQueryProvider.notifier).state = value,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    height: 36,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        _TabChip(
+                          label: 'All',
+                          selected: selectedTab == LeadTab.all,
+                          onSelected: () => ref.read(leadTabProvider.notifier).state = LeadTab.all,
+                        ),
+                        _TabChip(
+                          label: 'New',
+                          selected: selectedTab == LeadTab.newLead,
+                          onSelected: () => ref.read(leadTabProvider.notifier).state = LeadTab.newLead,
+                        ),
+                        _TabChip(
+                          label: 'Follow-up',
+                          selected: selectedTab == LeadTab.followUp,
+                          onSelected: () => ref.read(leadTabProvider.notifier).state = LeadTab.followUp,
+                        ),
+                        _TabChip(
+                          label: 'Closed',
+                          selected: selectedTab == LeadTab.closed,
+                          onSelected: () => ref.read(leadTabProvider.notifier).state = LeadTab.closed,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: AsyncValueWidget<List<Lead>>(
+                    value: leads,
+                    onRetry: () => ref.invalidate(leadsListProvider),
+                    data: (data) {
+                      if (data.isEmpty) {
+                        return const EmptyState(
+                          icon: Icons.inbox_outlined,
+                          title: 'No leads here yet',
+                          subtitle: 'New enquiries you capture will show up in this list.',
+                        );
+                      }
+                      return RefreshIndicator(
+                        color: AppColors.yamahaBlue,
+                        onRefresh: () async => ref.invalidate(leadsListProvider),
+                        child: ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+                          itemCount: data.length,
+                          itemBuilder: (context, index) {
+                            final lead = data[index];
+                            return LeadCard(
+                              lead: lead,
+                              onTap: () => context.push('/dealer/leads/${lead.id}'),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ] else
+                const Expanded(child: TestRidesTab()),
+            ],
+          ),
+        ),
       ),
     );
   }

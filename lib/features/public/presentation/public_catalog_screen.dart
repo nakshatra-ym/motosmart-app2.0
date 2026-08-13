@@ -21,52 +21,81 @@ class PublicCatalogScreen extends ConsumerWidget {
     return AppPageBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        body: SafeArea(
+          child: Column(
             children: [
-              Text('Yamaha Bikes', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-              Text(
-                'Explore the lineup',
-                style: theme.textTheme.labelSmall?.copyWith(color: AppColors.inkMuted, letterSpacing: 0.5),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => context.push('/login'),
-              child: const Text('Dealer login'),
-            ),
-          ],
-        ),
-        body: AsyncValueWidget<List<BikeModel>>(
-          value: modelsAsync,
-          onRetry: () => ref.invalidate(publicModelsProvider),
-          data: (models) => ListView(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => context.push('/exchange'),
-                      icon: const Icon(Icons.currency_rupee_rounded, size: 18),
-                      label: const Text('Exchange'),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 8, 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: FadeSlideIn(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'LINEUP',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: AppColors.yamahaBlue,
+                                letterSpacing: 2.2,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Yamaha Bikes',
+                              style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => context.push('/book-test-ride'),
-                      icon: const Icon(Icons.two_wheeler_rounded, size: 18),
-                      label: const Text('Test ride'),
+                    TextButton(
+                      onPressed: () => context.push('/login'),
+                      child: const Text('Dealer login'),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              const SizedBox(height: 18),
-              ...models.map((m) => _BikeListTile(model: m)),
+              Expanded(
+                child: AsyncValueWidget<List<BikeModel>>(
+                  value: modelsAsync,
+                  onRetry: () => ref.invalidate(publicModelsProvider),
+                  data: (models) => ListView(
+                    padding: const EdgeInsets.fromLTRB(16, 18, 16, 28),
+                    children: [
+                      FadeSlideIn(
+                        delay: const Duration(milliseconds: 60),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () => context.push('/exchange'),
+                                icon: const Icon(Icons.currency_rupee_rounded, size: 18),
+                                label: const Text('Exchange'),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () => context.push('/book-test-ride'),
+                                icon: const Icon(Icons.two_wheeler_rounded, size: 18),
+                                label: const Text('Test ride'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ...models.asMap().entries.map((e) {
+                        return FadeSlideIn(
+                          delay: Duration(milliseconds: 80 + e.key * 40),
+                          child: _BikeTile(model: e.value),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -75,8 +104,8 @@ class PublicCatalogScreen extends ConsumerWidget {
   }
 }
 
-class _BikeListTile extends StatelessWidget {
-  const _BikeListTile({required this.model});
+class _BikeTile extends StatelessWidget {
+  const _BikeTile({required this.model});
 
   final BikeModel model;
 
@@ -86,52 +115,40 @@ class _BikeListTile extends StatelessWidget {
     final priceText = NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 0)
         .format(model.price);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        border: Border.all(color: AppColors.border, width: 1.2),
-        boxShadow: AppTheme.softShadow,
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: GlassPanel(
         onTap: () => context.push('/models/${model.id}'),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              const AppIconWell(
-                icon: Icons.two_wheeler_rounded,
-                size: 56,
-                iconSize: 26,
-                filled: true,
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(model.displayName, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 3),
-                    Text(
-                      '${model.category} · ${model.engineCc}cc',
-                      style: theme.textTheme.bodySmall,
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            const AppIconWell(
+              icon: Icons.two_wheeler_rounded,
+              size: 56,
+              iconSize: 26,
+              filled: true,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(model.displayName, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 3),
+                  Text('${model.category} · ${model.engineCc}cc', style: theme.textTheme.bodySmall),
+                  const SizedBox(height: 8),
+                  Text(
+                    priceText,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: AppColors.accent,
+                      fontWeight: FontWeight.w800,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      priceText,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: AppColors.yamahaBlue,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              _StockBadge(status: model.stockStatus),
-            ],
-          ),
+            ),
+            _StockBadge(status: model.stockStatus),
+          ],
         ),
       ),
     );
@@ -153,9 +170,9 @@ class _StockBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
       ),
       child: Text(
         status.label,

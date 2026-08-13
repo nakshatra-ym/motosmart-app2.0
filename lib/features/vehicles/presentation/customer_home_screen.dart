@@ -21,6 +21,7 @@ class CustomerHomeScreen extends ConsumerWidget {
     final customer = ref.watch(authControllerProvider).valueOrNull?.customer;
     final bikeModels = ref.watch(publicModelsProvider).valueOrNull;
     final theme = Theme.of(context);
+    final name = customer?.name.split(' ').first ?? 'Rider';
 
     String modelName(String bikeModelId) {
       if (bikeModels == null) return 'Your Yamaha';
@@ -33,46 +34,70 @@ class CustomerHomeScreen extends ConsumerWidget {
     return AppPageBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                customer == null ? 'My bike' : 'Hi, ${customer.name.split(' ').first}',
-                style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              Text(
-                'Your garage',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: AppColors.inkMuted,
-                  letterSpacing: 0.6,
-                ),
-              ),
-            ],
-          ),
-        ),
-        body: RefreshIndicator(
-          color: AppColors.yamahaBlue,
-          onRefresh: () async => ref.invalidate(myVehiclesProvider),
-          child: AsyncValueWidget<List<Vehicle>>(
-            value: vehiclesAsync,
-            onRetry: () => ref.invalidate(myVehiclesProvider),
-            data: (vehicles) {
-              if (vehicles.isEmpty) {
-                return const EmptyState(
-                  icon: Icons.two_wheeler_outlined,
-                  title: 'No vehicle linked yet',
-                  subtitle: 'Ask your dealer to link your Yamaha to your account.',
+        body: SafeArea(
+          child: RefreshIndicator(
+            color: AppColors.yamahaBlue,
+            backgroundColor: AppColors.surface,
+            onRefresh: () async => ref.invalidate(myVehiclesProvider),
+            child: AsyncValueWidget<List<Vehicle>>(
+              value: vehiclesAsync,
+              onRetry: () => ref.invalidate(myVehiclesProvider),
+              data: (vehicles) {
+                if (vehicles.isEmpty) {
+                  return const EmptyState(
+                    icon: Icons.two_wheeler_outlined,
+                    title: 'Garage empty',
+                    subtitle: 'Ask your dealer to link your Yamaha — then the magic starts.',
+                  );
+                }
+                return ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+                  children: [
+                    FadeSlideIn(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'YOUR GARAGE',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: AppColors.yamahaBlue,
+                                  letterSpacing: 2.2,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const FloatingOrb(color: AppColors.magenta, size: 8),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Hi, $name',
+                            style: theme.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Health, service, and RideMate — one dark cockpit.',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 22),
+                    ...vehicles.asMap().entries.map((entry) {
+                      final v = entry.value;
+                      return FadeSlideIn(
+                        delay: Duration(milliseconds: 80 + entry.key * 60),
+                        child: _VehicleBento(
+                          vehicle: v,
+                          modelName: modelName(v.bikeModelId),
+                        ),
+                      );
+                    }),
+                  ],
                 );
-              }
-              return ListView(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
-                children: vehicles
-                    .map((v) => _VehicleCard(vehicle: v, modelName: modelName(v.bikeModelId)))
-                    .toList(),
-              );
-            },
+              },
+            ),
           ),
         ),
       ),
@@ -80,8 +105,8 @@ class CustomerHomeScreen extends ConsumerWidget {
   }
 }
 
-class _VehicleCard extends StatelessWidget {
-  const _VehicleCard({required this.vehicle, required this.modelName});
+class _VehicleBento extends StatelessWidget {
+  const _VehicleBento({required this.vehicle, required this.modelName});
 
   final Vehicle vehicle;
   final String modelName;
@@ -90,15 +115,10 @@ class _VehicleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 14),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
-        borderRadius: BorderRadius.circular(AppTheme.radiusXl),
-        border: Border.all(color: AppColors.border, width: 1.2),
-        boxShadow: AppTheme.softShadow,
-      ),
-      child: Padding(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: GlassPanel(
+        glow: AppColors.yamahaBlue,
         padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +127,7 @@ class _VehicleCard extends StatelessWidget {
               children: [
                 const AppIconWell(
                   icon: Icons.two_wheeler_rounded,
-                  size: 54,
+                  size: 56,
                   iconSize: 26,
                   filled: true,
                 ),
@@ -116,14 +136,16 @@ class _VehicleCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(modelName, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 3),
+                      Text(
+                        modelName,
+                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 4),
                       Text(
                         vehicle.registrationNo,
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        style: theme.textTheme.labelMedium?.copyWith(
                           color: AppColors.inkMuted,
-                          letterSpacing: 0.4,
-                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.2,
                         ),
                       ),
                     ],
@@ -132,42 +154,76 @@ class _VehicleCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 18),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceMuted,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    vehicle.purchaseDate == null
-                        ? 'Purchase date not on file'
-                        : 'Purchased ${DateFormat('MMM yyyy').format(vehicle.purchaseDate!)}',
-                    style: theme.textTheme.labelSmall?.copyWith(color: AppColors.inkMuted),
+            Row(
+              children: [
+                Expanded(
+                  child: _InfoChip(
+                    label: 'Purchased',
+                    value: vehicle.purchaseDate == null
+                        ? '—'
+                        : DateFormat('MMM yyyy').format(vehicle.purchaseDate!),
                   ),
-                  Text(
-                    '${vehicle.odometerKm} km',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppColors.yamahaBlue,
-                      fontWeight: FontWeight.w700,
-                    ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _InfoChip(
+                    label: 'Odometer',
+                    value: '${vehicle.odometerKm} km',
+                    accent: true,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton.icon(
+              child: FilledButton.icon(
                 onPressed: () => context.push('/customer/home/analytics/${vehicle.id}'),
                 icon: const Icon(Icons.monitor_heart_outlined, size: 18),
-                label: const Text('Live health & analytics'),
+                label: const Text('Open live health'),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _InfoChip extends StatelessWidget {
+  const _InfoChip({
+    required this.label,
+    required this.value,
+    this.accent = false,
+  });
+
+  final String label;
+  final String value;
+  final bool accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.glassBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: theme.textTheme.labelSmall),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: accent ? AppColors.accent : AppColors.ink,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }
