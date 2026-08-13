@@ -12,6 +12,9 @@ abstract class ServiceRepository {
     required String type,
     required String description,
     DateTime? preferredDate,
+    /// Diagnostics captured from the bike when the ticket was raised from the
+    /// OBD dashboard. Attached to the thread and fed to the AI triage.
+    String? obdContext,
   });
 
   Future<List<ServiceMessage>> listMessages(String requestId);

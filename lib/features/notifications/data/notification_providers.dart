@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/network_providers.dart';
+import '../../../data/api/api_notifications_repository.dart';
+
 import '../../../core/auth/auth_controller.dart';
 import '../../../data/mock/mock_notifications_repository.dart';
 import '../../../data/mock/mock_providers.dart';
@@ -7,10 +10,13 @@ import '../../../models/app_notification.dart';
 import 'notifications_repository.dart';
 
 final notificationsRepositoryProvider = Provider<NotificationsRepository>((ref) {
-  return MockNotificationsRepository(
-    ref.watch(mockDataStoreProvider),
-    currentEmployeeId: () => ref.read(authControllerProvider).valueOrNull?.employee?.id,
-  );
+  if (ref.watch(useMockDataProvider)) {
+    return MockNotificationsRepository(
+      ref.watch(mockDataStoreProvider),
+      currentEmployeeId: () => ref.read(authControllerProvider).valueOrNull?.employee?.id,
+    );
+  }
+  return ApiNotificationsRepository(ref.watch(apiClientProvider));
 });
 
 /// Firebase-free "push": [DealerShell] invalidates this on a light

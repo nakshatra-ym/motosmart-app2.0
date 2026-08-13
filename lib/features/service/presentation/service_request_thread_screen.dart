@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../core/auth/auth_controller.dart';
 import '../../../core/config/theme.dart';
 import '../../../core/widgets/async_value_widget.dart';
+import '../../../core/widgets/ticket_ai_chips.dart';
 import '../../../models/enums.dart';
 import '../../../models/service_message.dart';
 import '../../../models/service_request.dart';
@@ -62,6 +63,39 @@ class _ServiceRequestThreadScreenState extends ConsumerState<ServiceRequestThrea
       ),
       body: Column(
         children: [
+          // AI triage banner: what the model made of the request, so both sides
+          // of the thread see the same classification.
+          requestAsync.maybeWhen(
+            data: (r) => (r.aiPriority == null && r.aiSummary == null)
+                ? const SizedBox.shrink()
+                : Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+                    color: Colors.black.withValues(alpha: 0.03),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TicketAiChips(priority: r.aiPriority, category: r.aiCategory),
+                        if (r.aiSummary != null) ...[
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              const Icon(Icons.auto_awesome, size: 13, color: Colors.black45),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  r.aiSummary!,
+                                  style: const TextStyle(fontSize: 12, color: Colors.black54),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+            orElse: () => const SizedBox.shrink(),
+          ),
           Expanded(
             child: AsyncValueWidget<List<ServiceMessage>>(
               value: messagesAsync,

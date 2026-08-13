@@ -1,13 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:motosmart_app/core/auth/auth_controller.dart';
+import 'package:motosmart_app/core/network/network_providers.dart';
 
 import 'fakes/fake_token_storage.dart';
 
 void main() {
   test('mock auth request+confirm otp works', () async {
     final container = ProviderContainer(
-      overrides: [tokenStorageProvider.overrideWithValue(FakeTokenStorage())],
+      overrides: [
+        tokenStorageProvider.overrideWithValue(FakeTokenStorage()),
+        useMockDataProvider.overrideWithValue(true),
+      ],
     );
     addTearDown(container.dispose);
 

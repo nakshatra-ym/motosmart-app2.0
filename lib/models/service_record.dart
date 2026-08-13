@@ -1,3 +1,5 @@
+import 'json_utils.dart';
+
 class ServiceRecord {
   const ServiceRecord({
     required this.id,
@@ -20,16 +22,15 @@ class ServiceRecord {
   final int? nextServiceKm;
 
   factory ServiceRecord.fromJson(Map<String, dynamic> json) => ServiceRecord(
-        id: json['id'] as String,
-        vehicleId: json['vehicle_id'] as String,
-        serviceDate: DateTime.parse(json['service_date'] as String),
-        odometerKm: json['odometer_km'] as int,
-        serviceType: json['service_type'] as String,
-        cost: (json['cost'] as num).toDouble(),
-        nextServiceDate: json['next_service_date'] == null
-            ? null
-            : DateTime.parse(json['next_service_date'] as String),
-        nextServiceKm: json['next_service_km'] as int?,
+        id: asString(json['id']),
+        vehicleId: asString(json['vehicle_id']),
+        serviceDate: asDate(json['service_date']),
+        odometerKm: asInt(json['odometer_km']),
+        serviceType: asString(json['service_type'], fallback: 'Service'),
+        // `cost` is a nullable Decimal — arrives as a JSON string when set.
+        cost: asDouble(json['cost']),
+        nextServiceDate: asDateOrNull(json['next_service_date']),
+        nextServiceKm: asIntOrNull(json['next_service_km']),
       );
 
   Map<String, dynamic> toJson() => {

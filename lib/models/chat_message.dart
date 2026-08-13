@@ -1,4 +1,5 @@
 import 'enums.dart';
+import 'json_utils.dart';
 
 class ChatMessage {
   const ChatMessage({
@@ -14,10 +15,10 @@ class ChatMessage {
   final DateTime createdAt;
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
-        id: json['id'] as String,
-        role: ChatRole.fromValue(json['role'] as String),
-        content: json['content'] as String,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        id: asString(json['id']),
+        role: ChatRole.fromValue(asString(json['role'])),
+        content: asString(json['content']),
+        createdAt: asDate(json['created_at']),
       );
 
   Map<String, dynamic> toJson() => {

@@ -1,4 +1,5 @@
 import 'enums.dart';
+import 'json_utils.dart';
 
 enum NotificationRecipientType { employee, customer }
 
@@ -39,16 +40,17 @@ class AppNotification {
 
   factory AppNotification.fromJson(Map<String, dynamic> json) => AppNotification(
         id: json['id'] as String,
-        recipientType: (json['recipient_type'] as String) == 'CUSTOMER'
+        recipientType: asString(json['recipient_type']) == 'CUSTOMER'
             ? NotificationRecipientType.customer
             : NotificationRecipientType.employee,
-        recipientId: json['recipient_id'] as String,
-        type: NotificationType.fromValue(json['type'] as String),
-        title: json['title'] as String,
-        body: json['body'] as String,
-        payload: (json['payload_json'] as Map).cast<String, dynamic>(),
-        isRead: json['is_read'] as bool,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        recipientId: asString(json['recipient_id']),
+        type: NotificationType.fromValue(asString(json['type'])),
+        title: asString(json['title']),
+        // `body` and `payload_json` are both nullable server-side.
+        body: asString(json['body']),
+        payload: asMap(json['payload_json']),
+        isRead: json['is_read'] as bool? ?? false,
+        createdAt: asDate(json['created_at']),
       );
 
   Map<String, dynamic> toJson() => {

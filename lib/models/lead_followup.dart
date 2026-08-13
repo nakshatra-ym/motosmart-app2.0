@@ -1,3 +1,5 @@
+import 'json_utils.dart';
+
 class LeadFollowup {
   const LeadFollowup({
     required this.id,
@@ -50,12 +52,13 @@ class LeadFollowup {
   factory LeadFollowup.fromJson(Map<String, dynamic> json) => LeadFollowup(
         id: json['id'] as String,
         leadId: json['lead_id'] as String,
-        employeeId: json['employee_id'] as String,
-        nextAction: json['next_action'] as String,
-        scheduledDate: DateTime.parse(json['scheduled_date'] as String),
-        completed: json['completed'] as bool,
+        // Nullable server-side: a follow-up can outlive the employee row.
+        employeeId: asString(json['employee_id']),
+        nextAction: asString(json['next_action']),
+        scheduledDate: asDate(json['scheduled_date']),
+        completed: json['completed'] as bool? ?? false,
         outcomeNote: json['outcome_note'] as String?,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        createdAt: asDate(json['created_at']),
       );
 
   Map<String, dynamic> toJson() => {

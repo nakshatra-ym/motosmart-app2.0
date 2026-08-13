@@ -1,4 +1,5 @@
 import 'enums.dart';
+import 'json_utils.dart';
 
 class TestRideBooking {
   const TestRideBooking({
@@ -40,15 +41,17 @@ class TestRideBooking {
 
   factory TestRideBooking.fromJson(Map<String, dynamic> json) => TestRideBooking(
         id: json['id'] as String,
-        bikeModelId: json['bike_model_id'] as String,
-        name: json['name'] as String,
-        mobile: json['mobile'] as String,
-        preferredDate: DateTime.parse(json['preferred_date'] as String),
-        preferredTime: json['preferred_time'] as String,
-        dealerId: json['dealer_id'] as String,
-        status: TestRideStatus.fromValue(json['status'] as String),
+        // bike_model_id, preferred_time, and created_at are all nullable
+        // server-side (a booking need not name a model or a time).
+        bikeModelId: asString(json['bike_model_id']),
+        name: asString(json['name']),
+        mobile: asString(json['mobile']),
+        preferredDate: asDate(json['preferred_date']),
+        preferredTime: asString(json['preferred_time']),
+        dealerId: asString(json['dealer_id']),
+        status: TestRideStatus.fromValue(asString(json['status'])),
         linkedLeadId: json['linked_lead_id'] as String?,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        createdAt: asDate(json['created_at']),
       );
 
   Map<String, dynamic> toJson() => {

@@ -66,7 +66,9 @@ enum AiIntent {
 
 enum StockStatus {
   inStock('IN_STOCK'),
-  limited('LIMITED'),
+  // The backend's enum member is LOW_STOCK (see app/models/enums.py); the Dart
+  // name stays `limited` because the UI already reads it that way.
+  limited('LOW_STOCK'),
   outOfStock('OUT_OF_STOCK');
 
   const StockStatus(this.value);
@@ -129,6 +131,59 @@ enum ServiceRequestStatus {
         ServiceRequestStatus.inProgress => 'In progress',
         ServiceRequestStatus.resolved => 'Resolved',
       };
+}
+
+/// AI-assigned bucket for a service request (see the backend's `TicketCategory`).
+enum TicketCategory {
+  engine('ENGINE', 'Engine'),
+  brakes('BRAKES', 'Brakes'),
+  electrical('ELECTRICAL', 'Electrical'),
+  transmission('TRANSMISSION', 'Transmission'),
+  suspension('SUSPENSION', 'Suspension'),
+  tyres('TYRES', 'Tyres'),
+  body('BODY', 'Body'),
+  periodicService('PERIODIC_SERVICE', 'Periodic service'),
+  other('OTHER', 'Other');
+
+  const TicketCategory(this.value, this.label);
+  final String value;
+  final String label;
+
+  static TicketCategory? tryFromValue(String? value) {
+    if (value == null) return null;
+    for (final c in TicketCategory.values) {
+      if (c.value == value) return c;
+    }
+    return null;
+  }
+}
+
+/// How fast the desk should get to a ticket. `urgent` means stop riding.
+enum TicketPriority {
+  urgent('URGENT', 'Urgent'),
+  high('HIGH', 'High'),
+  normal('NORMAL', 'Normal'),
+  low('LOW', 'Low');
+
+  const TicketPriority(this.value, this.label);
+  final String value;
+  final String label;
+
+  /// Sort key so the dealer queue can put the dangerous ones first.
+  int get rank => switch (this) {
+        TicketPriority.urgent => 0,
+        TicketPriority.high => 1,
+        TicketPriority.normal => 2,
+        TicketPriority.low => 3,
+      };
+
+  static TicketPriority? tryFromValue(String? value) {
+    if (value == null) return null;
+    for (final p in TicketPriority.values) {
+      if (p.value == value) return p;
+    }
+    return null;
+  }
 }
 
 enum MessageSenderType {

@@ -1,3 +1,5 @@
+import 'json_utils.dart';
+
 class Employee {
   const Employee({
     required this.id,
@@ -17,11 +19,11 @@ class Employee {
 
   factory Employee.fromJson(Map<String, dynamic> json) => Employee(
         id: json['id'] as String,
-        dealerId: json['dealer_id'] as String,
-        name: json['name'] as String,
-        phone: json['phone'] as String,
-        email: json['email'] as String,
-        isActive: json['is_active'] as bool,
+        dealerId: asString(json['dealer_id']),
+        name: asString(json['name']),
+        phone: asString(json['phone']),
+        email: asString(json['email']),
+        isActive: json['is_active'] as bool? ?? true,
       );
 
   Map<String, dynamic> toJson() => {

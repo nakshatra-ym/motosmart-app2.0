@@ -8,6 +8,7 @@ import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../models/enums.dart';
 import '../../../models/service_request.dart';
+import '../../../core/widgets/ticket_ai_chips.dart';
 import '../../../models/service_status.dart';
 import '../../../models/vehicle.dart';
 import '../../vehicles/data/vehicles_providers.dart';
@@ -157,7 +158,21 @@ class _RequestTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         title: Text(request.type, style: const TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text(request.description, maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(request.description, maxLines: 1, overflow: TextOverflow.ellipsis),
+            if (request.aiPriority != null) ...[
+              const SizedBox(height: 4),
+              // Compact: the customer cares about urgency, not the category.
+              TicketAiChips(
+                priority: request.aiPriority,
+                category: request.aiCategory,
+                compact: true,
+              ),
+            ],
+          ],
+        ),
         trailing: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(color: _color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20)),

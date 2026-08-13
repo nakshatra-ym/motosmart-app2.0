@@ -69,7 +69,22 @@ class _TicketThreadScreenState extends ConsumerState<TicketThreadScreen> {
       appBar: AppBar(
         title: AsyncValueWidget<ServiceRequest>(
           value: ticketAsync,
-          data: (r) => Text(r.type),
+          // Who and which bike, not just the issue type — the dealer is replying
+          // to a person.
+          data: (r) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(r.type, style: const TextStyle(fontSize: 17)),
+              if (r.customerName != null || r.vehicleLabel != null)
+                Text(
+                  [r.customerName, r.vehicleLabel]
+                      .whereType<String>()
+                      .where((s) => s.isNotEmpty)
+                      .join(' · '),
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.normal),
+                ),
+            ],
+          ),
           loading: const Text('Ticket'),
         ),
       ),

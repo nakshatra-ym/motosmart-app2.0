@@ -194,8 +194,9 @@ final routerProvider = Provider<GoRouter>((ref) {
               routes: [
                 GoRoute(
                   path: 'new',
-                  builder: (context, state) =>
-                      NewServiceRequestScreen(vehicleId: state.extra as String),
+                  builder: (context, state) => NewServiceRequestScreen(
+                    args: NewServiceRequestArgs.from(state.extra),
+                  ),
                 ),
                 GoRoute(
                   path: 'history/:vehicleId',

@@ -110,10 +110,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         color: Colors.black.withValues(alpha: 0.04),
                         borderRadius: BorderRadius.circular(10),
                       ),
+                      // Real accounts get a real emailed OTP; the seeded ones
+                      // are Postgres-only and accept any code.
                       child: const Text(
-                        'Demo accounts:\n'
-                        'Dealer staff — rohit.sharma@ymsli.demo · 9876500001\n'
-                        'Customer — naveen.kumar@customer.demo · 9911100001',
+                        'Real OTP (code arrives by email):\n'
+                        'Dealer — ijklmnop7417@gmail.com\n'
+                        'Customer — darklord5156@gmail.com\n\n'
+                        'Demo accounts (any OTP works):\n'
+                        'Dealer — rohan@ymsli-demo.example\n'
+                        'Customer — test.customer@ymsli-demo.example',
                         style: TextStyle(fontSize: 12, color: Colors.black54),
                       ),
                     ),

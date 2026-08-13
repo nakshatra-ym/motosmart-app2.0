@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/auth/api_auth_repository.dart';
 import '../../../core/auth/auth_controller.dart';
 import '../../../core/auth/mock_auth_repository.dart';
+import '../../../core/config/env.dart';
 import '../../../core/config/theme.dart';
 import '../../../models/enums.dart';
 
@@ -21,6 +23,15 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   final _otpController = TextEditingController();
   bool _isSubmitting = false;
   bool _isResending = false;
+
+  /// Cognito emails an 8-digit code; the seeded demo accounts use 6.
+  static const _minOtpLength = 6;
+  static const _maxOtpLength = 8;
+
+  /// True when this sign-in takes the canned code rather than an emailed one:
+  /// either the whole app is on mock data, or this is a seeded demo identifier.
+  bool get _acceptsDemoOtp =>
+      Env.useMockData || ApiAuthRepository.usesDevShortcut(widget.identifier);
 
   @override
   void dispose() {
@@ -99,24 +110,38 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                     TextFormField(
                       controller: _otpController,
                       keyboardType: TextInputType.number,
-                      maxLength: 6,
+                      // Cognito's passwordless email codes are 8 digits; the
+                      // seeded demo accounts use a 6-digit one. Capping at 6
+                      // silently truncated every real code.
+                      maxLength: _maxOtpLength,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 24, letterSpacing: 8),
+                      style: const TextStyle(fontSize: 24, letterSpacing: 6),
                       decoration: const InputDecoration(counterText: ''),
                       validator: (value) {
-                        if (value == null || value.trim().length != 6) {
-                          return 'Enter the 6-digit OTP';
+                        final otp = value?.trim() ?? '';
+                        if (otp.length < _minOtpLength || otp.length > _maxOtpLength) {
+                          return 'Enter the $_minOtpLength–$_maxOtpLength digit code we sent you';
                         }
                         return null;
                       },
                       onFieldSubmitted: (_) => _verify(),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      'Demo OTP: ${MockAuthRepository.demoOtp}',
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.black45, fontSize: 12),
-                    ),
+                    // Only the demo accounts accept the canned code; a real
+                    // account's code arrives by email, so advertising it there
+                    // would just be wrong.
+                    if (_acceptsDemoOtp)
+                      Text(
+                        'Demo OTP: ${MockAuthRepository.demoOtp}',
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.black45, fontSize: 12),
+                      )
+                    else
+                      const Text(
+                        'The code was emailed to you — check spam too.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.black45, fontSize: 12),
+                      ),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: _isSubmitting ? null : _verify,

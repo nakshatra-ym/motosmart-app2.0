@@ -1,4 +1,5 @@
 import 'enums.dart';
+import 'json_utils.dart';
 
 class ServiceMessage {
   const ServiceMessage({
@@ -19,11 +20,12 @@ class ServiceMessage {
 
   factory ServiceMessage.fromJson(Map<String, dynamic> json) => ServiceMessage(
         id: json['id'] as String,
-        serviceRequestId: json['service_request_id'] as String,
-        senderType: MessageSenderType.fromValue(json['sender_type'] as String),
-        senderId: json['sender_id'] as String,
-        message: json['message'] as String,
-        createdAt: DateTime.parse(json['created_at'] as String),
+        serviceRequestId: asString(json['service_request_id']),
+        senderType: MessageSenderType.fromValue(asString(json['sender_type'])),
+        // Nullable server-side (a system-generated turn has no sender row).
+        senderId: asString(json['sender_id']),
+        message: asString(json['message']),
+        createdAt: asDate(json['created_at']),
       );
 
   Map<String, dynamic> toJson() => {

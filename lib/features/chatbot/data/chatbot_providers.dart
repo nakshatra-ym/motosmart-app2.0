@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/network_providers.dart';
+import '../../../data/api/api_chatbot_repository.dart';
+
 import '../../../core/auth/auth_controller.dart';
 import '../../../core/config/env.dart';
 import '../../../data/mock/mock_chatbot_repository.dart';
@@ -16,12 +19,15 @@ final groqChatbotServiceProvider = Provider<GroqChatbotService>((ref) {
 });
 
 final chatbotRepositoryProvider = Provider<ChatbotRepository>((ref) {
-  return MockChatbotRepository(
-    ref.watch(mockDataStoreProvider),
-    ref.watch(chatbotServiceProvider),
-    currentCustomerId: () => ref.read(authControllerProvider).valueOrNull?.customer?.id,
-    groqChatbot: ref.watch(groqChatbotServiceProvider),
-  );
+  if (ref.watch(useMockDataProvider)) {
+    return MockChatbotRepository(
+      ref.watch(mockDataStoreProvider),
+      ref.watch(chatbotServiceProvider),
+      currentCustomerId: () => ref.read(authControllerProvider).valueOrNull?.customer?.id,
+      groqChatbot: ref.watch(groqChatbotServiceProvider),
+    );
+  }
+  return ApiChatbotRepository(ref.watch(apiClientProvider));
 });
 
 final chatHistoryProvider = FutureProvider.autoDispose<List<ChatMessage>>((ref) async {

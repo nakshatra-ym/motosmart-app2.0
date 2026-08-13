@@ -31,6 +31,11 @@ class CustomerDashboardScreen extends StatelessWidget {
     final reading = dashboard.latestReading;
     final health = dashboard.health;
 
+    // Readings come from the bike, never from a generator. Until an ELM327 is
+    // connected there is nothing honest to show, so the screen asks for the
+    // device instead of displaying zeroes or invented values.
+    final hasReadings = dashboard.isLive;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Bike — Health'),
@@ -42,88 +47,104 @@ class CustomerDashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {},
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Card(
-              color: dashboard.isLive ? Colors.green.shade50 : Colors.orange.shade50,
-              child: ListTile(
-                dense: true,
-                leading: Icon(
-                  dashboard.isLive ? Icons.bluetooth_connected : Icons.science_outlined,
-                  color: dashboard.isLive ? Colors.green : Colors.orange,
-                ),
-                title: Text(
-                  dashboard.isLive
-                      ? 'Live data — ${dashboard.liveDeviceName}'
-                      : 'Simulated data — tap the Bluetooth icon to connect a real ELM327',
-                ),
+      body: hasReadings
+          ? RefreshIndicator(
+              onRefresh: () async {},
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  Card(
+                    color: Colors.green.shade50,
+                    child: ListTile(
+                      dense: true,
+                      leading: const Icon(Icons.bluetooth_connected, color: Colors.green),
+                      title: Text('Live data — ${dashboard.liveDeviceName}'),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  HealthBadge(health: health),
+                  const SizedBox(height: 16),
+                  const Text('Live Telemetry',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  const SizedBox(height: 8),
+                  TelemetryGrid(reading: reading),
+                  if (reading.activeDtcCodes.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    const Text('Active Alerts',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                    ...reading.activeDtcCodes.map((code) => AlertCard(
+                          dtcCode: code,
+                          aiExplanation: dashboard.aiExplanation,
+                          aiLoading: dashboard.aiLoading,
+                        )),
+                  ],
+                  const SizedBox(height: 20),
+                ],
               ),
+            )
+          : _ConnectPrompt(
+              isConnecting: dashboard.isConnecting,
+              error: dashboard.connectionError,
+              onConnect: () => _openConnectScreen(context),
             ),
-            const SizedBox(height: 16),
-            HealthBadge(health: health),
-            const SizedBox(height: 16),
-            const Text('Live Telemetry',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-            const SizedBox(height: 8),
-            TelemetryGrid(reading: reading),
-            if (reading.activeDtcCodes.isNotEmpty) ...[
-              const SizedBox(height: 16),
-              const Text('Active Alerts',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-              ...reading.activeDtcCodes.map((code) => AlertCard(
-                    dtcCode: code,
-                    aiExplanation: dashboard.aiExplanation,
-                    aiLoading: dashboard.aiLoading,
-                  )),
-            ],
-            const SizedBox(height: 20),
-            // Demo-only controls — remove before shipping, keep for judging.
-            _DemoControls(dashboard: dashboard),
-          ],
-        ),
-      ),
     );
   }
 }
 
-/// Buttons to reliably trigger a fault on demand during a live demo,
-/// instead of hoping the mock generator randomly produces one on stage.
-class _DemoControls extends StatelessWidget {
-  final DashboardProvider dashboard;
-  const _DemoControls({required this.dashboard});
+/// Shown until a real device is feeding readings.
+class _ConnectPrompt extends StatelessWidget {
+  const _ConnectPrompt({
+    required this.isConnecting,
+    required this.error,
+    required this.onConnect,
+  });
+
+  final bool isConnecting;
+  final String? error;
+  final VoidCallback onConnect;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.grey.shade50,
+    return Center(
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(32),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Demo controls',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ElevatedButton(
-                  onPressed: () => dashboard.injectFault(['P0300']),
-                  child: const Text('Inject misfire (red)'),
-                ),
-                ElevatedButton(
-                  onPressed: () => dashboard.injectFault(['P0117']),
-                  child: const Text('Inject coolant fault (amber)'),
-                ),
-                OutlinedButton(
-                  onPressed: () => dashboard.clearFault(),
-                  child: const Text('Clear fault'),
-                ),
-              ],
+            Icon(Icons.bluetooth_searching, size: 64, color: Colors.blueGrey.shade300),
+            const SizedBox(height: 20),
+            const Text(
+              'Connect your OBD device',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Live readings come from the ELM327 plugged into your bike. '
+              'Pair the device over Bluetooth to see engine speed, coolant '
+              'temperature, battery voltage and any fault codes.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13, color: Colors.black.withValues(alpha: 0.6)),
+            ),
+            if (error != null) ...[
+              const SizedBox(height: 16),
+              Text(
+                error!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 13, color: Colors.red),
+              ),
+            ],
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: isConnecting ? null : onConnect,
+              icon: isConnecting
+                  ? const SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    )
+                  : const Icon(Icons.bluetooth),
+              label: Text(isConnecting ? 'Connecting…' : 'Connect device'),
             ),
           ],
         ),

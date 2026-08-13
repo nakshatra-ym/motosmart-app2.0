@@ -1,3 +1,5 @@
+import 'json_utils.dart';
+
 class Dealer {
   const Dealer({
     required this.id,
@@ -17,11 +19,12 @@ class Dealer {
 
   factory Dealer.fromJson(Map<String, dynamic> json) => Dealer(
         id: json['id'] as String,
-        name: json['name'] as String,
-        code: json['code'] as String,
-        city: json['city'] as String,
-        address: json['address'] as String,
-        phone: json['phone'] as String,
+        name: asString(json['name']),
+        // city/address/phone are all nullable server-side.
+        code: asString(json['code']),
+        city: asString(json['city']),
+        address: asString(json['address']),
+        phone: asString(json['phone']),
       );
 
   Map<String, dynamic> toJson() => {

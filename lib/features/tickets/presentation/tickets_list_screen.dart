@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../core/config/theme.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/ticket_ai_chips.dart';
 import '../../../data/mock/mock_providers.dart';
 import '../../../models/enums.dart';
 import '../../../models/service_request.dart';
@@ -22,16 +23,24 @@ class TicketsListScreen extends ConsumerWidget {
     final store = ref.watch(mockDataStoreProvider);
     final bikeModels = ref.watch(publicModelsProvider).valueOrNull;
 
-    String customerName(String customerId) {
+    // The API sends the customer and vehicle on the ticket, because the dealer
+    // app has no way to look them up itself. Only mock mode falls back to the
+    // in-memory store — reading the store first is what produced
+    // "Unknown customer" for every real ticket.
+    String customerName(ServiceRequest ticket) {
+      final fromApi = ticket.customerName;
+      if (fromApi != null && fromApi.isNotEmpty) return fromApi;
       for (final c in store.customers) {
-        if (c.id == customerId) return c.name;
+        if (c.id == ticket.customerId) return c.name;
       }
       return 'Unknown customer';
     }
 
-    String? vehicleLabel(String vehicleId) {
+    String? vehicleLabel(ServiceRequest ticket) {
+      final fromApi = ticket.vehicleLabel;
+      if (fromApi != null && fromApi.isNotEmpty) return fromApi;
       for (final v in store.vehicles) {
-        if (v.id == vehicleId) {
+        if (v.id == ticket.vehicleId) {
           String? modelName;
           if (bikeModels != null) {
             for (final m in bikeModels) {
@@ -89,17 +98,26 @@ class TicketsListScreen extends ConsumerWidget {
                             ],
                           ),
                           const SizedBox(height: 4),
-                          Text(customerName(ticket.customerId), style: const TextStyle(color: Colors.black54)),
-                          if (vehicleLabel(ticket.vehicleId) != null) ...[
+                          Text(customerName(ticket), style: const TextStyle(color: Colors.black54)),
+                          if (vehicleLabel(ticket) != null) ...[
                             const SizedBox(height: 2),
                             Text(
-                              vehicleLabel(ticket.vehicleId)!,
+                              vehicleLabel(ticket)!,
                               style: const TextStyle(color: Colors.black54, fontSize: 12),
                             ),
                           ],
+                          if (ticket.aiPriority != null || ticket.aiCategory != null) ...[
+                            const SizedBox(height: 8),
+                            TicketAiChips(
+                              priority: ticket.aiPriority,
+                              category: ticket.aiCategory,
+                            ),
+                          ],
                           const SizedBox(height: 8),
+                          // The AI one-liner reads better in a queue than the
+                          // customer's full prose; falls back to the prose.
                           Text(
-                            ticket.description,
+                            ticket.aiSummary ?? ticket.description,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),

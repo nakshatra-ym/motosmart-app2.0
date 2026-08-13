@@ -14,10 +14,39 @@ const _serviceTypes = [
   'Other',
 ];
 
-class NewServiceRequestScreen extends ConsumerStatefulWidget {
-  const NewServiceRequestScreen({super.key, required this.vehicleId});
+/// Route argument for the new-request form.
+///
+/// Exists so a ticket raised from the OBD dashboard can arrive pre-filled with
+/// the captured diagnostics, while the plain "New request" button keeps passing
+/// just a vehicle id.
+class NewServiceRequestArgs {
+  const NewServiceRequestArgs({
+    required this.vehicleId,
+    this.prefillType,
+    this.prefillDescription,
+    this.obdContext,
+  });
 
   final String vehicleId;
+  final String? prefillType;
+  final String? prefillDescription;
+
+  /// Raw readings, attached to the thread as their own message so the desk sees
+  /// the evidence, and fed to the backend's AI triage.
+  final String? obdContext;
+
+  /// Accepts either shape of `GoRouterState.extra`: a bare vehicle id from the
+  /// normal entry point, or a full args object from the dashboard.
+  factory NewServiceRequestArgs.from(Object? extra) {
+    if (extra is NewServiceRequestArgs) return extra;
+    return NewServiceRequestArgs(vehicleId: extra as String);
+  }
+}
+
+class NewServiceRequestScreen extends ConsumerStatefulWidget {
+  const NewServiceRequestScreen({super.key, required this.args});
+
+  final NewServiceRequestArgs args;
 
   @override
   ConsumerState<NewServiceRequestScreen> createState() => _NewServiceRequestScreenState();
@@ -25,10 +54,22 @@ class NewServiceRequestScreen extends ConsumerStatefulWidget {
 
 class _NewServiceRequestScreenState extends ConsumerState<NewServiceRequestScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _descriptionController = TextEditingController();
-  String _type = _serviceTypes.first;
+  late final TextEditingController _descriptionController;
+  late String _type;
   DateTime? _preferredDate;
   bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _descriptionController =
+        TextEditingController(text: widget.args.prefillDescription ?? '');
+    // Only honour a suggested type the dropdown actually offers.
+    final suggested = widget.args.prefillType;
+    _type = (suggested != null && _serviceTypes.contains(suggested))
+        ? suggested
+        : _serviceTypes.first;
+  }
 
   @override
   void dispose() {
@@ -51,10 +92,11 @@ class _NewServiceRequestScreenState extends ConsumerState<NewServiceRequestScree
     setState(() => _isSubmitting = true);
     try {
       final request = await ref.read(serviceRepositoryProvider).createRequest(
-            vehicleId: widget.vehicleId,
+            vehicleId: widget.args.vehicleId,
             type: _type,
             description: _descriptionController.text.trim(),
             preferredDate: _preferredDate,
+            obdContext: widget.args.obdContext,
           );
       ref.invalidate(serviceRequestsListProvider);
       if (!mounted) return;
@@ -100,6 +142,36 @@ class _NewServiceRequestScreenState extends ConsumerState<NewServiceRequestScree
                   ),
                 ),
               ),
+              if (widget.args.obdContext != null) ...[
+                const SizedBox(height: 14),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(Icons.memory, size: 16, color: Colors.black54),
+                          SizedBox(width: 6),
+                          Text(
+                            'Diagnostics attached',
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        widget.args.obdContext!,
+                        style: const TextStyle(fontSize: 11, color: Colors.black54),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _isSubmitting ? null : _submit,

@@ -3,13 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:motosmart_app/core/auth/auth_controller.dart';
+import 'package:motosmart_app/core/network/network_providers.dart';
 import 'package:motosmart_app/main.dart';
 
 import 'fakes/fake_token_storage.dart';
 
 Widget buildTestApp() {
   return ProviderScope(
-    overrides: [tokenStorageProvider.overrideWithValue(FakeTokenStorage())],
+    overrides: [
+      tokenStorageProvider.overrideWithValue(FakeTokenStorage()),
+      // These tests assert against the in-memory demo data, so they pin the app
+      // to mock mode regardless of the build-time default.
+      useMockDataProvider.overrideWithValue(true),
+    ],
     child: const MotoSmartApp(),
   );
 }

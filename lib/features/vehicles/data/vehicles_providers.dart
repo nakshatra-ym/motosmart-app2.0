@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/network_providers.dart';
+import '../../../data/api/api_vehicles_repository.dart';
+
 import '../../../core/auth/auth_controller.dart';
 import '../../../data/mock/mock_providers.dart';
 import '../../../data/mock/mock_vehicles_repository.dart';
@@ -9,10 +12,13 @@ import '../../../models/vehicle.dart';
 import 'vehicles_repository.dart';
 
 final vehiclesRepositoryProvider = Provider<VehiclesRepository>((ref) {
-  return MockVehiclesRepository(
-    ref.watch(mockDataStoreProvider),
-    currentCustomerId: () => ref.read(authControllerProvider).valueOrNull?.customer?.id,
-  );
+  if (ref.watch(useMockDataProvider)) {
+    return MockVehiclesRepository(
+      ref.watch(mockDataStoreProvider),
+      currentCustomerId: () => ref.read(authControllerProvider).valueOrNull?.customer?.id,
+    );
+  }
+  return ApiVehiclesRepository(ref.watch(apiClientProvider));
 });
 
 final myVehiclesProvider = FutureProvider.autoDispose<List<Vehicle>>((ref) async {

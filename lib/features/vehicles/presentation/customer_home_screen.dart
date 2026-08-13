@@ -100,7 +100,10 @@ class _VehicleCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Purchased ${DateFormat('MMM yyyy').format(vehicle.purchaseDate)}',
+                Text(
+                    vehicle.purchaseDate == null
+                        ? 'Purchase date not on file'
+                        : 'Purchased ${DateFormat('MMM yyyy').format(vehicle.purchaseDate!)}',
                     style: const TextStyle(fontSize: 12, color: Colors.black54)),
                 Text('${vehicle.odometerKm} km', style: const TextStyle(fontSize: 12, color: Colors.black54)),
               ],

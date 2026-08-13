@@ -46,6 +46,8 @@ class MockServiceRepository implements ServiceRepository {
     required String type,
     required String description,
     DateTime? preferredDate,
+    // Accepted for interface parity; the mock layer has no AI triage to feed.
+    String? obdContext,
   }) async {
     await _simulateLatency();
     final customerId = _currentCustomerId();

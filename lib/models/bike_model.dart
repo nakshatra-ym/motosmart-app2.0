@@ -1,4 +1,5 @@
 import 'enums.dart';
+import 'json_utils.dart';
 
 class BikeModel {
   const BikeModel({
@@ -30,14 +31,14 @@ class BikeModel {
   factory BikeModel.fromJson(Map<String, dynamic> json) => BikeModel(
         id: json['id'] as String,
         name: json['name'] as String,
-        variant: json['variant'] as String? ?? '',
-        category: json['category'] as String,
-        price: (json['price'] as num).toDouble(),
-        engineCc: json['engine_cc'] as int,
+        variant: asString(json['variant']),
+        category: asString(json['category']),
+        price: asDouble(json['price']),
+        engineCc: asInt(json['engine_cc']),
         imageUrl: json['image_url'] as String?,
         brochureUrl: json['brochure_url'] as String?,
-        stockStatus: StockStatus.fromValue(json['stock_status'] as String),
-        isAvailable: json['is_available'] as bool,
+        stockStatus: StockStatus.fromValue(asString(json['stock_status'])),
+        isAvailable: json['is_available'] as bool? ?? false,
       );
 
   Map<String, dynamic> toJson() => {

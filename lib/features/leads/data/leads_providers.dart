@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/network_providers.dart';
+import '../../../data/api/api_leads_repository.dart';
+
 import '../../../core/auth/auth_controller.dart';
 import '../../../data/mock/ai_classify_service.dart';
 import '../../../data/mock/mock_leads_repository.dart';
@@ -15,13 +18,16 @@ final aiClassifyServiceProvider = Provider<AiClassifyService>((ref) => AiClassif
 /// Swap for a dio-backed implementation once the real API is live —
 /// nothing under features/leads/presentation depends on the mock directly.
 final leadsRepositoryProvider = Provider<LeadsRepository>((ref) {
-  return MockLeadsRepository(
-    ref.watch(mockDataStoreProvider),
-    ref.watch(aiClassifyServiceProvider),
-    currentEmployeeId: () => ref.read(authControllerProvider).valueOrNull?.employee?.id ?? '',
-    currentDealerId: () =>
-        ref.read(authControllerProvider).valueOrNull?.employee?.dealerId ?? '',
-  );
+  if (ref.watch(useMockDataProvider)) {
+    return MockLeadsRepository(
+      ref.watch(mockDataStoreProvider),
+      ref.watch(aiClassifyServiceProvider),
+      currentEmployeeId: () => ref.read(authControllerProvider).valueOrNull?.employee?.id ?? '',
+      currentDealerId: () =>
+          ref.read(authControllerProvider).valueOrNull?.employee?.dealerId ?? '',
+    );
+  }
+  return ApiLeadsRepository(ref.watch(apiClientProvider));
 });
 
 /// The leads list screen's status tabs — "Closed" conflates CLOSED_WON and

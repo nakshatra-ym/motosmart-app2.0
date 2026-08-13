@@ -1,3 +1,4 @@
+import 'json_utils.dart';
 import 'lead_followup.dart';
 
 /// A follow-up joined with its lead's customer name, exactly the shape
@@ -14,9 +15,9 @@ class FollowupWithLead {
   final String leadMobile;
 
   factory FollowupWithLead.fromJson(Map<String, dynamic> json) => FollowupWithLead(
-        followup: LeadFollowup.fromJson(json['followup'] as Map<String, dynamic>),
-        leadCustomerName: json['lead_customer_name'] as String,
-        leadMobile: json['lead_mobile'] as String,
+        followup: LeadFollowup.fromJson(asMap(json['followup'])),
+        leadCustomerName: asString(json['lead_customer_name']),
+        leadMobile: asString(json['lead_mobile']),
       );
 
   Map<String, dynamic> toJson() => {
@@ -43,15 +44,22 @@ class DashboardSummary {
 
   int get openLeadsCount => newLeadsCount + followUpLeadsCount;
 
-  factory DashboardSummary.fromJson(Map<String, dynamic> json) => DashboardSummary(
-        newLeadsCount: json['new_leads_count'] as int,
-        followUpLeadsCount: json['follow_up_leads_count'] as int,
-        closedThisMonthCount: json['closed_this_month_count'] as int,
-        hotLeadsCount: json['hot_leads_count'] as int,
-        todaysFollowups: (json['todays_followups'] as List)
-            .map((e) => FollowupWithLead.fromJson(e as Map<String, dynamic>))
-            .toList(),
-      );
+  /// Maps `GET /dashboard/summary` (see `DashboardSummaryOut`). The backend
+  /// reports statuses and intents as breakdown maps rather than flat counters,
+  /// so the two per-bucket figures are read out of those.
+  factory DashboardSummary.fromJson(Map<String, dynamic> json) {
+    final byStatus = asMap(json['leads_by_status']);
+    final byIntent = asMap(json['leads_by_intent']);
+    return DashboardSummary(
+      newLeadsCount: asInt(json['new_leads']),
+      followUpLeadsCount: asInt(byStatus['FOLLOW_UP']),
+      closedThisMonthCount: asInt(json['closed_this_month']),
+      hotLeadsCount: asInt(byIntent['HOT']),
+      todaysFollowups: asMapList(json['todays_followup_items'])
+          .map(FollowupWithLead.fromJson)
+          .toList(),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'new_leads_count': newLeadsCount,
