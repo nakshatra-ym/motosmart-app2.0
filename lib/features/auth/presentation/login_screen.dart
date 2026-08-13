@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/auth/auth_controller.dart';
 import '../../../core/config/theme.dart';
 import '../../../core/widgets/app_visuals.dart';
+import '../../../core/widgets/shimmer.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -106,14 +107,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ElevatedButton(
                                 onPressed: _isSubmitting ? null : _sendOtp,
                                 child: _isSubmitting
-                                    ? const SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
-                                        ),
-                                      )
+                                    ? const SoftLoader(size: 20, color: Colors.white)
                                     : const Text('Continue with OTP'),
                               ),
                             ],

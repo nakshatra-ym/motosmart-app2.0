@@ -7,6 +7,7 @@ import '../../../core/auth/auth_controller.dart';
 import '../../../core/auth/mock_auth_repository.dart';
 import '../../../core/config/env.dart';
 import '../../../core/config/theme.dart';
+import '../../../core/widgets/shimmer.dart';
 import '../../../models/enums.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
@@ -156,14 +157,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                     ElevatedButton(
                       onPressed: _isSubmitting ? null : _verify,
                       child: _isSubmitting
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
+                          ? const SoftLoader(size: 20, color: Colors.white)
                           : const Text('Verify & Continue'),
                     ),
                     const SizedBox(height: 8),

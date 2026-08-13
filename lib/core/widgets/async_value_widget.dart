@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'shimmer.dart';
+
 /// The one place loading/error/data is rendered for an [AsyncValue], per
 /// PLAN_frontend.md's "every screen handles the three states explicitly."
 class AsyncValueWidget<T> extends StatelessWidget {
@@ -22,7 +24,7 @@ class AsyncValueWidget<T> extends StatelessWidget {
     return value.when(
       data: data,
       error: (error, stackTrace) => _ErrorView(error: error, onRetry: onRetry),
-      loading: () => loading ?? const Center(child: CircularProgressIndicator()),
+      loading: () => loading ?? const ShimmerPageSkeleton(),
     );
   }
 }
