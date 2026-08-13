@@ -342,10 +342,6 @@ class AppTheme {
         backgroundColor: AppColors.yamahaRed,
         textColor: Colors.white,
       ),
-      refreshIndicatorTheme: const RefreshIndicatorThemeData(
-        color: AppColors.yamahaBlue,
-        backgroundColor: AppColors.surface,
-      ),
     );
   }
 }

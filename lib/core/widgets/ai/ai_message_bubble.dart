@@ -72,7 +72,7 @@ class AiMessageBubble extends StatelessWidget {
                     bottomLeft: Radius.circular(_isUser ? 18 : 6),
                     bottomRight: Radius.circular(_isUser ? 6 : 18),
                   ),
-                  border: _isUser ? null : const Border.all(color: AppColors.border),
+                  border: _isUser ? null : Border.all(color: AppColors.border),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.ink.withValues(alpha: _isUser ? 0.1 : 0.04),
