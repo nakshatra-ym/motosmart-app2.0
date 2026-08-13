@@ -36,7 +36,7 @@ class IncentivesScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => _pickMonth(context, ref, month),
-            child: Text(DateFormat('MMM yyyy').format(month), style: const TextStyle(color: Colors.white)),
+            child: Text(DateFormat('MMM yyyy').format(month), style: const TextStyle(color: AppColors.ink)),
           ),
         ],
       ),
@@ -134,7 +134,7 @@ class _StatChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.05),
+        color: AppColors.surfaceMuted,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text('$label: $value', style: const TextStyle(fontSize: 11)),

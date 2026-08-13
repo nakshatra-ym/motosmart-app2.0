@@ -59,11 +59,11 @@ class NotificationsScreen extends ConsumerWidget {
                 return ListTile(
                   leading: CircleAvatar(
                     backgroundColor: n.isRead
-                        ? Colors.black.withValues(alpha: 0.05)
+                        ? AppColors.surfaceMuted
                         : AppColors.yamahaBlue.withValues(alpha: 0.1),
                     child: Icon(
                       _iconFor(n.type),
-                      color: n.isRead ? Colors.black45 : AppColors.yamahaBlue,
+                      color: n.isRead ? AppColors.inkFaint : AppColors.yamahaBlue,
                       size: 20,
                     ),
                   ),
@@ -74,7 +74,7 @@ class NotificationsScreen extends ConsumerWidget {
                   subtitle: Text(n.body),
                   trailing: Text(
                     DateFormat('d MMM, h:mm a').format(n.createdAt),
-                    style: const TextStyle(fontSize: 11, color: Colors.black45),
+                    style: const TextStyle(fontSize: 11, color: AppColors.inkFaint),
                   ),
                   onTap: () => _onTap(context, ref, n),
                 );

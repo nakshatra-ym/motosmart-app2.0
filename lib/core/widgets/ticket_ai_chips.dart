@@ -24,11 +24,10 @@ class TicketAiChips extends StatelessWidget {
   final bool compact;
 
   static Color colorFor(TicketPriority priority) => switch (priority) {
-        // Urgent means "stop riding" — it gets the same red as a hot lead.
         TicketPriority.urgent => AppColors.hot,
         TicketPriority.high => AppColors.warm,
         TicketPriority.normal => AppColors.yamahaBlue,
-        TicketPriority.low => Colors.blueGrey,
+        TicketPriority.low => AppColors.inkFaint,
       };
 
   @override
@@ -44,7 +43,7 @@ class TicketAiChips extends StatelessWidget {
           filled: priority == TicketPriority.urgent,
         ),
       if (category != null && !compact)
-        _Chip(label: category!.label, color: Colors.black54),
+        _Chip(label: category!.label, color: AppColors.inkMuted),
     ];
 
     if (chips.isEmpty) return const SizedBox.shrink();
@@ -68,11 +67,11 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: filled ? 0.9 : 0.10),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.35)),
+        color: color.withValues(alpha: filled ? 0.92 : 0.1),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: filled ? 0.0 : 0.28)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -87,6 +86,7 @@ class _Chip extends StatelessWidget {
               color: filled ? Colors.white : color,
               fontSize: 11,
               fontWeight: FontWeight.w600,
+              letterSpacing: 0.1,
             ),
           ),
         ],

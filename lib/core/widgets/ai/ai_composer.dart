@@ -22,14 +22,12 @@ class AiComposer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: AppColors.surface,
       elevation: 0,
       child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(color: Colors.black.withValues(alpha: 0.06)),
-          ),
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          border: Border(top: BorderSide(color: AppColors.border)),
         ),
         child: SafeArea(
           top: false,
@@ -50,30 +48,30 @@ class AiComposer extends StatelessWidget {
                       maxLines: 4,
                       textInputAction: TextInputAction.send,
                       onSubmitted: enabled ? (_) => onSend() : null,
-                      style: const TextStyle(fontSize: 15, height: 1.35),
+                      style: const TextStyle(
+                        fontSize: 15,
+                        height: 1.35,
+                        color: AppColors.ink,
+                      ),
                       decoration: InputDecoration(
                         hintText: hintText,
-                        hintStyle: TextStyle(
-                          color: Colors.black.withValues(alpha: 0.35),
+                        hintStyle: const TextStyle(
+                          color: AppColors.inkFaint,
                           fontSize: 15,
                         ),
                         filled: true,
-                        fillColor: AppColors.background,
+                        fillColor: AppColors.canvas,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(
-                            color: Colors.black.withValues(alpha: 0.08),
-                          ),
+                          borderSide: const BorderSide(color: AppColors.border),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide(
-                            color: Colors.black.withValues(alpha: 0.08),
-                          ),
+                          borderSide: const BorderSide(color: AppColors.border),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -85,7 +83,7 @@ class AiComposer extends StatelessWidget {
                         disabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide(
-                            color: Colors.black.withValues(alpha: 0.05),
+                            color: AppColors.border.withValues(alpha: 0.6),
                           ),
                         ),
                       ),

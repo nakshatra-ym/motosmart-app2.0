@@ -16,7 +16,7 @@ class MotoSmartApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(
-      title: 'Smart Dealer Enquiry App',
+      title: 'Motospot',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       routerConfig: router,

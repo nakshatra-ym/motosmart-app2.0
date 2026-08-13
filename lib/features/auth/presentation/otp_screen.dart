@@ -47,10 +47,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             identifier: widget.identifier,
             otp: _otpController.text.trim(),
           );
-      // The redirect guard would eventually catch this too, but this screen
-      // was reached via push() on top of the public catalog/login stack, so
-      // navigate explicitly rather than waiting on a refreshListenable-driven
-      // redirect for a non-top-level route.
       if (!mounted) return;
       final role = ref.read(authControllerProvider).valueOrNull?.role;
       context.go(role == UserRole.customer ? '/customer/home' : '/dealer/dashboard');
@@ -78,12 +74,14 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Verify OTP')),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Form(
@@ -91,31 +89,46 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Icon(Icons.sms_outlined, size: 48, color: AppColors.yamahaBlue),
-                    const SizedBox(height: 12),
+                    Center(
+                      child: Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          color: AppColors.yamahaBlue.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: AppColors.yamahaBlue.withValues(alpha: 0.1),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.sms_outlined,
+                          size: 28,
+                          color: AppColors.yamahaBlue,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     Text(
                       'Enter the OTP sent to',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.inkMuted),
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       widget.identifier,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleMedium,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 28),
                     TextFormField(
                       controller: _otpController,
                       keyboardType: TextInputType.number,
-                      // Cognito's passwordless email codes are 8 digits; the
-                      // seeded demo accounts use a 6-digit one. Capping at 6
-                      // silently truncated every real code.
                       maxLength: _maxOtpLength,
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 24, letterSpacing: 6),
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        letterSpacing: 8,
+                        fontWeight: FontWeight.w600,
+                      ),
                       decoration: const InputDecoration(counterText: ''),
                       validator: (value) {
                         final otp = value?.trim() ?? '';
@@ -127,22 +140,19 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                       onFieldSubmitted: (_) => _verify(),
                     ),
                     const SizedBox(height: 8),
-                    // Only the demo accounts accept the canned code; a real
-                    // account's code arrives by email, so advertising it there
-                    // would just be wrong.
                     if (_acceptsDemoOtp)
                       Text(
                         'Demo OTP: ${MockAuthRepository.demoOtp}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.black45, fontSize: 12),
+                        style: theme.textTheme.bodySmall,
                       )
                     else
-                      const Text(
+                      Text(
                         'The code was emailed to you — check spam too.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.black45, fontSize: 12),
+                        style: theme.textTheme.bodySmall,
                       ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                     ElevatedButton(
                       onPressed: _isSubmitting ? null : _verify,
                       child: _isSubmitting

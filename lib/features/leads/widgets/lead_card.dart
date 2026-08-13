@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/config/theme.dart';
 import '../../../core/widgets/intent_badge.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../../models/lead.dart';
@@ -27,12 +28,12 @@ class LeadCard extends ConsumerWidget {
     }
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -41,29 +42,37 @@ class LeadCard extends ConsumerWidget {
                   Expanded(
                     child: Text(
                       lead.customerName,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      style: Theme.of(context).textTheme.titleMedium,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   if (lead.aiIntent != null) IntentBadge(intent: lead.aiIntent!, compact: true),
                 ],
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 6),
               Text(
                 lead.mobile,
-                style: const TextStyle(color: Colors.black54, fontSize: 13),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.inkMuted,
+                      fontSize: 13,
+                    ),
               ),
               if (bikeName != null) ...[
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.two_wheeler, size: 14, color: Colors.black45),
-                    const SizedBox(width: 4),
-                    Text(bikeName, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+                    const Icon(Icons.two_wheeler, size: 14, color: AppColors.inkFaint),
+                    const SizedBox(width: 6),
+                    Text(
+                      bikeName,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.inkMuted,
+                          ),
+                    ),
                   ],
                 ),
               ],
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   StatusChip(status: lead.status),
@@ -71,7 +80,7 @@ class LeadCard extends ConsumerWidget {
                   if (lead.tentativePurchaseDate != null)
                     Text(
                       DateFormat('d MMM').format(lead.tentativePurchaseDate!),
-                      style: const TextStyle(fontSize: 12, color: Colors.black45),
+                      style: Theme.of(context).textTheme.labelSmall,
                     ),
                 ],
               ),

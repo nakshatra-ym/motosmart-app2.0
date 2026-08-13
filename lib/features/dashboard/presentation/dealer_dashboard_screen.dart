@@ -18,6 +18,7 @@ class DealerDashboardScreen extends ConsumerWidget {
     final summary = ref.watch(dashboardSummaryProvider);
     final employee = ref.watch(authControllerProvider).valueOrNull?.employee;
     final unreadCount = ref.watch(unreadNotificationsCountProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -39,7 +40,7 @@ class DealerDashboardScreen extends ConsumerWidget {
           value: summary,
           onRetry: () => ref.invalidate(dashboardSummaryProvider),
           data: (data) => ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 28),
             children: [
               Row(
                 children: [
@@ -85,17 +86,20 @@ class DealerDashboardScreen extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: () => context.push('/dealer/leads/new'),
-                icon: const Icon(Icons.add),
-                label: const Text('Capture new enquiry'),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () => context.push('/dealer/leads/new'),
+                  icon: const Icon(Icons.add, size: 18),
+                  label: const Text('Capture new enquiry'),
+                ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               Text(
                 "Today's follow-ups",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleMedium,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               if (data.todaysFollowups.isEmpty)
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 24),
@@ -108,11 +112,12 @@ class DealerDashboardScreen extends ConsumerWidget {
               else
                 ...data.todaysFollowups.map(
                   (item) => Card(
-                    margin: const EdgeInsets.only(bottom: 8),
+                    margin: const EdgeInsets.only(bottom: 10),
                     child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                       leading: CircleAvatar(
                         backgroundColor: item.followup.isOverdue
-                            ? AppColors.hot.withValues(alpha: 0.15)
+                            ? AppColors.hot.withValues(alpha: 0.12)
                             : AppColors.yamahaBlue.withValues(alpha: 0.1),
                         child: Icon(
                           item.followup.isOverdue ? Icons.warning_amber : Icons.event_available,
@@ -120,11 +125,18 @@ class DealerDashboardScreen extends ConsumerWidget {
                           size: 20,
                         ),
                       ),
-                      title: Text(item.leadCustomerName),
-                      subtitle: Text('${item.followup.nextAction} · ${item.leadMobile}'),
-                      trailing: item.followup.isOverdue
-                          ? const Text('Overdue', style: TextStyle(color: AppColors.hot, fontSize: 12))
-                          : const Text('Today', style: TextStyle(color: AppColors.statusFollowUp, fontSize: 12)),
+                      title: Text(item.leadCustomerName, style: theme.textTheme.titleSmall),
+                      subtitle: Text(
+                        '${item.followup.nextAction} · ${item.leadMobile}',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      trailing: Text(
+                        item.followup.isOverdue ? 'Overdue' : 'Today',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: item.followup.isOverdue ? AppColors.hot : AppColors.statusFollowUp,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       onTap: () => context.push('/dealer/leads/${item.followup.leadId}'),
                     ),
                   ),
@@ -138,7 +150,12 @@ class DealerDashboardScreen extends ConsumerWidget {
 }
 
 class _StatCard extends StatelessWidget {
-  const _StatCard({required this.label, required this.value, required this.color, required this.icon});
+  const _StatCard({
+    required this.label,
+    required this.value,
+    required this.color,
+    required this.icon,
+  });
 
   final String label;
   final int value;
@@ -147,19 +164,36 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: color),
-            const SizedBox(height: 8),
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color, size: 18),
+            ),
+            const SizedBox(height: 14),
             Text(
               '$value',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.8,
+              ),
             ),
-            Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54)),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(color: AppColors.inkMuted),
+            ),
           ],
         ),
       ),

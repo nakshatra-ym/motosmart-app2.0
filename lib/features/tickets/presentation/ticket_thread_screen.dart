@@ -98,7 +98,7 @@ class _TicketThreadScreenState extends ConsumerState<TicketThreadScreen> {
                   Expanded(
                     child: Text(
                       ticket.description,
-                      style: const TextStyle(color: Colors.black54),
+                      style: const TextStyle(color: AppColors.inkMuted),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -137,7 +137,7 @@ class _TicketThreadScreenState extends ConsumerState<TicketThreadScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
                       decoration: BoxDecoration(
-                        color: isMe ? AppColors.yamahaBlue : Colors.black.withValues(alpha: 0.06),
+                        color: isMe ? AppColors.yamahaBlue : AppColors.surfaceMuted,
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Column(
@@ -145,14 +145,14 @@ class _TicketThreadScreenState extends ConsumerState<TicketThreadScreen> {
                         children: [
                           Text(
                             m.message,
-                            style: TextStyle(color: isMe ? Colors.white : Colors.black87),
+                            style: TextStyle(color: isMe ? Colors.white : AppColors.ink),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             DateFormat('d MMM, h:mm a').format(m.createdAt),
                             style: TextStyle(
                               fontSize: 10,
-                              color: isMe ? Colors.white70 : Colors.black45,
+                              color: isMe ? Colors.white70 : AppColors.inkFaint,
                             ),
                           ),
                         ],

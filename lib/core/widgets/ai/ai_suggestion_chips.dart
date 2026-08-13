@@ -66,16 +66,16 @@ class _SuggestionChipState extends State<_SuggestionChip> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             constraints: const BoxConstraints(minHeight: 44),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(999),
               border: Border.all(
                 color: _pressed
                     ? AppColors.yamahaBlue.withValues(alpha: 0.35)
-                    : Colors.black.withValues(alpha: 0.08),
+                    : AppColors.border,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
+                  color: AppColors.ink.withValues(alpha: 0.03),
                   blurRadius: 6,
                   offset: const Offset(0, 2),
                 ),
@@ -96,7 +96,7 @@ class _SuggestionChipState extends State<_SuggestionChip> {
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: Color(0xFF2A2A2A),
+                      color: AppColors.ink,
                       height: 1.25,
                     ),
                   ),

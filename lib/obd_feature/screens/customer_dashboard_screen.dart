@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/config/theme.dart';
 import '../state/dashboard_provider.dart';
 import '../widgets/health_badge.dart';
 import '../widgets/telemetry_grid.dart';
@@ -124,7 +125,7 @@ class _ConnectPrompt extends StatelessWidget {
               'Pair the device over Bluetooth to see engine speed, coolant '
               'temperature, battery voltage and any fault codes.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: Colors.black.withValues(alpha: 0.6)),
+              style: const TextStyle(fontSize: 13, color: AppColors.inkMuted),
             ),
             if (error != null) ...[
               const SizedBox(height: 16),

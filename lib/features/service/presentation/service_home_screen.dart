@@ -6,9 +6,9 @@ import 'package:intl/intl.dart';
 import '../../../core/config/theme.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/ticket_ai_chips.dart';
 import '../../../models/enums.dart';
 import '../../../models/service_request.dart';
-import '../../../core/widgets/ticket_ai_chips.dart';
 import '../../../models/service_status.dart';
 import '../../../models/vehicle.dart';
 import '../../vehicles/data/vehicles_providers.dart';
@@ -21,6 +21,7 @@ class ServiceHomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vehiclesAsync = ref.watch(myVehiclesProvider);
     final requestsAsync = ref.watch(serviceRequestsListProvider);
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Service')),
@@ -35,29 +36,34 @@ class ServiceHomeScreen extends ConsumerWidget {
           data: (vehicles) {
             final primaryVehicle = vehicles.isEmpty ? null : vehicles.first;
             return ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 28),
               children: [
                 if (primaryVehicle != null) _ServiceStatusCard(vehicleId: primaryVehicle.id),
                 const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: primaryVehicle == null
-                      ? null
-                      : () => context.push('/customer/service/new', extra: primaryVehicle.id),
-                  icon: const Icon(Icons.add_circle_outline),
-                  label: const Text('Raise a new service request'),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: primaryVehicle == null
+                        ? null
+                        : () => context.push('/customer/service/new', extra: primaryVehicle.id),
+                    icon: const Icon(Icons.add_circle_outline, size: 18),
+                    label: const Text('Raise a new service request'),
+                  ),
                 ),
                 if (primaryVehicle != null) ...[
-                  const SizedBox(height: 8),
-                  OutlinedButton.icon(
-                    onPressed: () => context.push('/customer/service/history/${primaryVehicle.id}'),
-                    icon: const Icon(Icons.history),
-                    label: const Text('View service history'),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () => context.push('/customer/service/history/${primaryVehicle.id}'),
+                      icon: const Icon(Icons.history, size: 18),
+                      label: const Text('View service history'),
+                    ),
                   ),
                 ],
-                const SizedBox(height: 24),
-                Text('My requests',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
+                const SizedBox(height: 28),
+                Text('My requests', style: theme.textTheme.titleMedium),
+                const SizedBox(height: 12),
                 AsyncValueWidget<List<ServiceRequest>>(
                   value: requestsAsync,
                   onRetry: () => ref.invalidate(serviceRequestsListProvider),
@@ -93,13 +99,19 @@ class _ServiceStatusCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final statusAsync = ref.watch(serviceStatusProvider(vehicleId));
+    final theme = Theme.of(context);
+
     return AsyncValueWidget<ServiceStatus>(
       value: statusAsync,
       onRetry: () => ref.invalidate(serviceStatusProvider(vehicleId)),
       data: (status) {
         final color = status.isOverdue ? AppColors.hot : AppColors.statusClosedWon;
         return Card(
-          color: color.withValues(alpha: 0.08),
+          color: color.withValues(alpha: 0.07),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+            side: BorderSide(color: color.withValues(alpha: 0.2)),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -107,11 +119,14 @@ class _ServiceStatusCard extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Icon(status.isOverdue ? Icons.warning_amber : Icons.check_circle_outline, color: color),
+                    Icon(
+                      status.isOverdue ? Icons.warning_amber : Icons.check_circle_outline,
+                      color: color,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       status.isOverdue ? 'Service overdue' : 'Service up to date',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: color),
+                      style: theme.textTheme.titleSmall?.copyWith(color: color),
                     ),
                   ],
                 ),
@@ -120,7 +135,7 @@ class _ServiceStatusCard extends ConsumerWidget {
                   Text(
                     'Last: ${DateFormat('d MMM yyyy').format(status.lastService!.serviceDate)} '
                     'at ${status.lastService!.odometerKm} km',
-                    style: const TextStyle(fontSize: 13),
+                    style: theme.textTheme.bodySmall,
                   ),
                 if (status.nextServiceDate != null || status.nextServiceKm != null)
                   Padding(
@@ -129,7 +144,7 @@ class _ServiceStatusCard extends ConsumerWidget {
                       'Next due: '
                       '${status.nextServiceDate != null ? DateFormat('d MMM yyyy').format(status.nextServiceDate!) : '—'}'
                       '${status.nextServiceKm != null ? ' or ${status.nextServiceKm} km' : ''}',
-                      style: const TextStyle(fontSize: 13),
+                      style: theme.textTheme.bodySmall,
                     ),
                   ),
               ],
@@ -154,17 +169,24 @@ class _RequestTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
-        title: Text(request.type, style: const TextStyle(fontWeight: FontWeight.w600)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        title: Text(request.type, style: theme.textTheme.titleSmall),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(request.description, maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(
+              request.description,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall,
+            ),
             if (request.aiPriority != null) ...[
-              const SizedBox(height: 4),
-              // Compact: the customer cares about urgency, not the category.
+              const SizedBox(height: 6),
               TicketAiChips(
                 priority: request.aiPriority,
                 category: request.aiCategory,
@@ -174,9 +196,15 @@ class _RequestTile extends StatelessWidget {
           ],
         ),
         trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(color: _color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20)),
-          child: Text(request.status.label, style: TextStyle(color: _color, fontSize: 11, fontWeight: FontWeight.w600)),
+          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+          decoration: BoxDecoration(
+            color: _color.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: Text(
+            request.status.label,
+            style: TextStyle(color: _color, fontSize: 11, fontWeight: FontWeight.w600),
+          ),
         ),
         onTap: () => context.push('/customer/service/${request.id}'),
       ),

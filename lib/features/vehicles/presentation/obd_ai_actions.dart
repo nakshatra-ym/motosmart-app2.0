@@ -131,7 +131,7 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       builder: (sheetContext) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
@@ -171,9 +171,9 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
                         const SizedBox(height: 4),
                         Text(
                           summary.isAiGenerated ? 'AI generated insight' : 'Rule-based insight',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
-                            color: Colors.black.withValues(alpha: 0.45),
+                            color: AppColors.inkFaint,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -208,9 +208,9 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
                 Text(
                   'Based on ${summary.samplesUsed} readings'
                   '${summary.windowSeconds != null ? ' over the last ${summary.windowSeconds}s' : ''}.',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
-                    color: Colors.black.withValues(alpha: 0.4),
+                    color: AppColors.inkFaint,
                     height: 1.35,
                   ),
                 ),
@@ -221,7 +221,7 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
                 style: const TextStyle(
                   fontSize: 15,
                   height: 1.5,
-                  color: Color(0xFF1A1A1A),
+                  color: AppColors.ink,
                 ),
               ),
               const SizedBox(height: 22),
@@ -309,11 +309,11 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
     // is better than offering a button that would describe an empty dashboard.
     if (!dashboard.isLive) {
       return Material(
-        color: Colors.white,
+        color: AppColors.surface,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(top: BorderSide(color: Colors.black.withValues(alpha: 0.06))),
+            color: AppColors.surface,
+            border: Border(top: BorderSide(color: AppColors.border)),
           ),
           child: SafeArea(
             top: false,
@@ -321,15 +321,15 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, size: 18, color: Colors.black.withValues(alpha: 0.4)),
+                  const Icon(Icons.info_outline, size: 18, color: AppColors.inkFaint),
                   const SizedBox(width: 10),
-                  Expanded(
+                  const Expanded(
                     child: Text(
                       'Connect your OBD device to get an AI health summary.',
                       style: TextStyle(
                         fontSize: 13,
                         height: 1.35,
-                        color: Colors.black.withValues(alpha: 0.55),
+                        color: AppColors.inkMuted,
                       ),
                     ),
                   ),
@@ -342,14 +342,14 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
     }
 
     return Material(
-      color: Colors.white,
+      color: AppColors.surface,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Colors.black.withValues(alpha: 0.06))),
+          color: AppColors.surface,
+          border: Border(top: BorderSide(color: AppColors.border)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: AppColors.ink.withValues(alpha: 0.04),
               blurRadius: 12,
               offset: const Offset(0, -2),
             ),
@@ -432,7 +432,7 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
                           decoration: BoxDecoration(
                             color: AppColors.background,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+                            border: Border.all(color: AppColors.border),
                           ),
                           child: Row(
                             children: [
@@ -447,9 +447,9 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
                                   _summary!.summary,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12.5,
-                                    color: Colors.black.withValues(alpha: 0.55),
+                                    color: AppColors.inkMuted,
                                   ),
                                 ),
                               ),

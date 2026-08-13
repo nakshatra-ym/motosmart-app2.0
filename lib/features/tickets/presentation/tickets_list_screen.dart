@@ -22,11 +22,8 @@ class TicketsListScreen extends ConsumerWidget {
     final ticketsAsync = ref.watch(ticketsListProvider);
     final store = ref.watch(mockDataStoreProvider);
     final bikeModels = ref.watch(publicModelsProvider).valueOrNull;
+    final theme = Theme.of(context);
 
-    // The API sends the customer and vehicle on the ticket, because the dealer
-    // app has no way to look them up itself. Only mock mode falls back to the
-    // in-memory store — reading the store first is what produced
-    // "Unknown customer" for every real ticket.
     String customerName(ServiceRequest ticket) {
       final fromApi = ticket.customerName;
       if (fromApi != null && fromApi.isNotEmpty) return fromApi;
@@ -72,59 +69,58 @@ class TicketsListScreen extends ConsumerWidget {
               );
             }
             return ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
               itemCount: tickets.length,
               itemBuilder: (context, index) {
                 final ticket = tickets[index];
                 return Card(
-                  margin: const EdgeInsets.only(bottom: 10),
+                  margin: const EdgeInsets.only(bottom: 12),
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusLg),
                     onTap: () => context.push('/dealer/tickets/${ticket.id}'),
                     child: Padding(
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
                               Expanded(
-                                child: Text(
-                                  ticket.type,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                ),
+                                child: Text(ticket.type, style: theme.textTheme.titleMedium),
                               ),
                               _StatusChip(status: ticket.status),
                             ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(customerName(ticket), style: const TextStyle(color: Colors.black54)),
+                          const SizedBox(height: 6),
+                          Text(
+                            customerName(ticket),
+                            style: theme.textTheme.bodySmall?.copyWith(color: AppColors.inkMuted),
+                          ),
                           if (vehicleLabel(ticket) != null) ...[
                             const SizedBox(height: 2),
                             Text(
                               vehicleLabel(ticket)!,
-                              style: const TextStyle(color: Colors.black54, fontSize: 12),
+                              style: theme.textTheme.labelSmall,
                             ),
                           ],
                           if (ticket.aiPriority != null || ticket.aiCategory != null) ...[
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 10),
                             TicketAiChips(
                               priority: ticket.aiPriority,
                               category: ticket.aiCategory,
                             ),
                           ],
-                          const SizedBox(height: 8),
-                          // The AI one-liner reads better in a queue than the
-                          // customer's full prose; falls back to the prose.
+                          const SizedBox(height: 10),
                           Text(
                             ticket.aiSummary ?? ticket.description,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.inkMuted),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 10),
                           Text(
                             DateFormat('d MMM yyyy, h:mm a').format(ticket.createdAt),
-                            style: const TextStyle(color: Colors.black45, fontSize: 11),
+                            style: theme.textTheme.labelSmall,
                           ),
                         ],
                       ),
@@ -153,12 +149,15 @@ class _StatusChip extends StatelessWidget {
       ServiceRequestStatus.resolved => AppColors.statusClosedWon,
     };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(999),
       ),
-      child: Text(status.label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+      child: Text(
+        status.label,
+        style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600),
+      ),
     );
   }
 }

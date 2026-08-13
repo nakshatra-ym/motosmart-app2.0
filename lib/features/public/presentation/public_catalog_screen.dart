@@ -22,7 +22,7 @@ class PublicCatalogScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => context.push('/login'),
-            child: const Text('Dealer login', style: TextStyle(color: Colors.white)),
+            child: const Text('Dealer login'),
           ),
         ],
       ),
@@ -30,14 +30,14 @@ class PublicCatalogScreen extends ConsumerWidget {
         value: modelsAsync,
         onRetry: () => ref.invalidate(publicModelsProvider),
         data: (models) => ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 28),
           children: [
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => context.push('/exchange'),
-                    icon: const Icon(Icons.currency_rupee),
+                    icon: const Icon(Icons.currency_rupee, size: 18),
                     label: const Text('Exchange value'),
                   ),
                 ),
@@ -45,13 +45,13 @@ class PublicCatalogScreen extends ConsumerWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => context.push('/book-test-ride'),
-                    icon: const Icon(Icons.two_wheeler),
+                    icon: const Icon(Icons.two_wheeler, size: 18),
                     label: const Text('Book test ride'),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             ...models.map((m) => _BikeListTile(model: m)),
           ],
         ),
@@ -67,39 +67,49 @@ class _BikeListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final priceText = NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 0)
         .format(model.price);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
         onTap: () => context.push('/models/${model.id}'),
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Container(
-                width: 56,
-                height: 56,
+                width: 58,
+                height: 58,
                 decoration: BoxDecoration(
                   color: AppColors.yamahaBlue.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: AppColors.yamahaBlue.withValues(alpha: 0.08),
+                  ),
                 ),
                 child: const Icon(Icons.two_wheeler, color: AppColors.yamahaBlue, size: 28),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(model.displayName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Text(model.displayName, style: theme.textTheme.titleSmall),
+                    const SizedBox(height: 2),
                     Text(
                       '${model.category} · ${model.engineCc}cc',
-                      style: const TextStyle(color: Colors.black54, fontSize: 12),
+                      style: theme.textTheme.bodySmall,
                     ),
-                    const SizedBox(height: 4),
-                    Text(priceText, style: const TextStyle(fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 6),
+                    Text(
+                      priceText,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: AppColors.yamahaBlue,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -125,9 +135,15 @@ class _StockBadge extends StatelessWidget {
       StockStatus.outOfStock => AppColors.statusClosedLost,
     };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20)),
-      child: Text(status.label, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600)),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        status.label,
+        style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600),
+      ),
     );
   }
 }

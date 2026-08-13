@@ -41,11 +41,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: AppColors.canvas,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
               child: Form(
@@ -53,26 +56,57 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Icon(Icons.two_wheeler, size: 56, color: AppColors.yamahaBlue),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Smart Dealer Enquiry App',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            color: AppColors.yamahaBlue,
-                            fontWeight: FontWeight.bold,
+                    Center(
+                      child: Container(
+                        width: 72,
+                        height: 72,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppColors.yamahaBlue,
+                              AppColors.yamahaBlue.withValues(alpha: 0.82),
+                            ],
                           ),
+                          borderRadius: BorderRadius.circular(22),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.yamahaBlue.withValues(alpha: 0.25),
+                              blurRadius: 24,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(Icons.two_wheeler, size: 34, color: Colors.white),
+                      ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Motospot',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        color: AppColors.yamahaBlue,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.8,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Smart Dealer Enquiry',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: AppColors.inkMuted,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     Text(
                       'Dealer staff & customer sign-in',
                       textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.copyWith(color: Colors.black.withValues(alpha: 0.6)),
+                      style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.inkFaint),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 36),
                     TextFormField(
                       controller: _identifierController,
                       keyboardType: TextInputType.emailAddress,
@@ -103,23 +137,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             )
                           : const Text('Send OTP'),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 28),
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+                        border: Border.all(color: AppColors.border),
                       ),
-                      // Real accounts get a real emailed OTP; the seeded ones
-                      // are Postgres-only and accept any code.
-                      child: const Text(
+                      child: Text(
                         'Real OTP (code arrives by email):\n'
                         'Dealer — ijklmnop7417@gmail.com\n'
                         'Customer — darklord5156@gmail.com\n\n'
                         'Demo accounts (any OTP works):\n'
                         'Dealer — rohan@ymsli-demo.example\n'
                         'Customer — test.customer@ymsli-demo.example',
-                        style: TextStyle(fontSize: 12, color: Colors.black54),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.inkMuted,
+                          height: 1.45,
+                        ),
                       ),
                     ),
                   ],

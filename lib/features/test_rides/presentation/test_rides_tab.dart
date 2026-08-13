@@ -82,7 +82,7 @@ class TestRidesTab extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 4),
-                      Text(booking.mobile, style: const TextStyle(color: Colors.black54)),
+                      Text(booking.mobile, style: const TextStyle(color: AppColors.inkMuted)),
                       const SizedBox(height: 6),
                       Text(
                         bikeName(booking.bikeModelId) ?? 'Unknown model',
@@ -90,7 +90,7 @@ class TestRidesTab extends ConsumerWidget {
                       ),
                       Text(
                         '${DateFormat('d MMM yyyy').format(booking.preferredDate)} · ${booking.preferredTime}',
-                        style: const TextStyle(color: Colors.black54, fontSize: 12),
+                        style: const TextStyle(color: AppColors.inkMuted, fontSize: 12),
                       ),
                       if (booking.status == TestRideStatus.requested ||
                           booking.status == TestRideStatus.confirmed) ...[

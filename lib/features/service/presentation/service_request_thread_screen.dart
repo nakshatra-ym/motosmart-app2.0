@@ -71,7 +71,7 @@ class _ServiceRequestThreadScreenState extends ConsumerState<ServiceRequestThrea
                 : Container(
                     width: double.infinity,
                     padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
-                    color: Colors.black.withValues(alpha: 0.03),
+                    color: AppColors.surfaceMuted,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -80,12 +80,12 @@ class _ServiceRequestThreadScreenState extends ConsumerState<ServiceRequestThrea
                           const SizedBox(height: 6),
                           Row(
                             children: [
-                              const Icon(Icons.auto_awesome, size: 13, color: Colors.black45),
+                              const Icon(Icons.auto_awesome, size: 13, color: AppColors.inkFaint),
                               const SizedBox(width: 6),
                               Expanded(
                                 child: Text(
                                   r.aiSummary!,
-                                  style: const TextStyle(fontSize: 12, color: Colors.black54),
+                                  style: const TextStyle(fontSize: 12, color: AppColors.inkMuted),
                                 ),
                               ),
                             ],
@@ -114,7 +114,7 @@ class _ServiceRequestThreadScreenState extends ConsumerState<ServiceRequestThrea
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
                       decoration: BoxDecoration(
-                        color: isMe ? AppColors.yamahaBlue : Colors.black.withValues(alpha: 0.06),
+                        color: isMe ? AppColors.yamahaBlue : AppColors.surfaceMuted,
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Column(
@@ -122,14 +122,14 @@ class _ServiceRequestThreadScreenState extends ConsumerState<ServiceRequestThrea
                         children: [
                           Text(
                             m.message,
-                            style: TextStyle(color: isMe ? Colors.white : Colors.black87),
+                            style: TextStyle(color: isMe ? Colors.white : AppColors.ink),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             DateFormat('d MMM, h:mm a').format(m.createdAt),
                             style: TextStyle(
                               fontSize: 10,
-                              color: isMe ? Colors.white70 : Colors.black45,
+                              color: isMe ? Colors.white70 : AppColors.inkFaint,
                             ),
                           ),
                         ],

@@ -55,7 +55,7 @@ class AiMessageBubble extends StatelessWidget {
                       Text(
                         'RideMate',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Colors.black.withValues(alpha: 0.45),
+                              color: AppColors.inkFaint,
                               fontWeight: FontWeight.w600,
                               letterSpacing: 0.2,
                             ),
@@ -65,19 +65,17 @@ class AiMessageBubble extends StatelessWidget {
                 ),
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: _isUser ? AppColors.yamahaBlue : Colors.white,
+                  color: _isUser ? AppColors.yamahaBlue : AppColors.surface,
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(18),
                     topRight: const Radius.circular(18),
                     bottomLeft: Radius.circular(_isUser ? 18 : 6),
                     bottomRight: Radius.circular(_isUser ? 6 : 18),
                   ),
-                  border: _isUser
-                      ? null
-                      : Border.all(color: Colors.black.withValues(alpha: 0.06)),
+                  border: _isUser ? null : const Border.all(color: AppColors.border),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: _isUser ? 0.08 : 0.04),
+                      color: AppColors.ink.withValues(alpha: _isUser ? 0.1 : 0.04),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -88,7 +86,7 @@ class AiMessageBubble extends StatelessWidget {
                   child: SelectableText(
                     message.content,
                     style: TextStyle(
-                      color: _isUser ? Colors.white : const Color(0xFF1A1A1A),
+                      color: _isUser ? Colors.white : AppColors.ink,
                       fontSize: 15,
                       height: 1.45,
                       fontWeight: FontWeight.w400,
@@ -101,10 +99,7 @@ class AiMessageBubble extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Text(
                   DateFormat.jm().format(message.createdAt.toLocal()),
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Colors.black.withValues(alpha: 0.35),
-                        fontSize: 10,
-                      ),
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(fontSize: 10),
                 ),
               ),
             ],
@@ -113,7 +108,9 @@ class AiMessageBubble extends StatelessWidget {
       ),
     );
 
-    if (!animate) return Padding(padding: const EdgeInsets.only(bottom: 14), child: bubble);
+    if (!animate) {
+      return Padding(padding: const EdgeInsets.only(bottom: 14), child: bubble);
+    }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),

@@ -26,10 +26,10 @@ class IntentBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 10, vertical: compact ? 3 : 5),
+      padding: EdgeInsets.symmetric(horizontal: compact ? 8 : 10, vertical: compact ? 4 : 6),
       decoration: BoxDecoration(
         color: _color,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -42,7 +42,7 @@ class IntentBadge extends StatelessWidget {
               color: Colors.white,
               fontSize: compact ? 11 : 12,
               fontWeight: FontWeight.w700,
-              letterSpacing: 0.3,
+              letterSpacing: 0.4,
             ),
           ),
         ],
@@ -63,12 +63,13 @@ class UnclassifiedBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: busy ? null : onTap,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(999),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.06),
-          borderRadius: BorderRadius.circular(20),
+          color: AppColors.surfaceMuted,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(color: AppColors.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -80,11 +81,15 @@ class UnclassifiedBadge extends StatelessWidget {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             else
-              const Icon(Icons.auto_awesome, size: 14),
+              Icon(Icons.auto_awesome, size: 14, color: AppColors.yamahaBlue.withValues(alpha: 0.8)),
             const SizedBox(width: 4),
             Text(
               busy ? 'Classifying…' : 'AI classify',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.ink,
+              ),
             ),
           ],
         ),

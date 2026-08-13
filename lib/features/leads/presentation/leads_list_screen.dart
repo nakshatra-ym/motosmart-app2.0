@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/config/theme.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
 import '../../../models/lead.dart';
@@ -42,9 +43,24 @@ class _LeadsListScreenState extends ConsumerState<LeadsListScreen> {
           : null,
       body: Column(
         children: [
-          Padding(
+            Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: SegmentedButton<LeadsSegment>(
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return AppColors.yamahaBlue.withValues(alpha: 0.1);
+                  }
+                  return AppColors.surface;
+                }),
+                foregroundColor: WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return AppColors.yamahaBlue;
+                  }
+                  return AppColors.inkMuted;
+                }),
+                side: const WidgetStatePropertyAll(BorderSide(color: AppColors.border)),
+              ),
               segments: const [
                 ButtonSegment(
                   value: LeadsSegment.leads,

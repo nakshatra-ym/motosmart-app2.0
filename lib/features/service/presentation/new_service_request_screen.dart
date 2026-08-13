@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/config/theme.dart';
 import '../data/service_providers.dart';
 
 const _serviceTypes = [
@@ -147,7 +148,7 @@ class _NewServiceRequestScreenState extends ConsumerState<NewServiceRequestScree
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.04),
+                    color: AppColors.surfaceMuted,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Column(
@@ -155,7 +156,7 @@ class _NewServiceRequestScreenState extends ConsumerState<NewServiceRequestScree
                     children: [
                       const Row(
                         children: [
-                          Icon(Icons.memory, size: 16, color: Colors.black54),
+                          Icon(Icons.memory, size: 16, color: AppColors.inkMuted),
                           SizedBox(width: 6),
                           Text(
                             'Diagnostics attached',
@@ -166,7 +167,7 @@ class _NewServiceRequestScreenState extends ConsumerState<NewServiceRequestScree
                       const SizedBox(height: 6),
                       Text(
                         widget.args.obdContext!,
-                        style: const TextStyle(fontSize: 11, color: Colors.black54),
+                        style: const TextStyle(fontSize: 11, color: AppColors.inkMuted),
                       ),
                     ],
                   ),

@@ -100,31 +100,25 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.14),
+                color: AppColors.yamahaBlue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(Icons.auto_awesome, size: 18),
+              child: const Icon(Icons.auto_awesome, size: 18, color: AppColors.yamahaBlue),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'RideMate',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 17,
-                      letterSpacing: -0.2,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          letterSpacing: -0.2,
+                        ),
                   ),
                   Text(
                     'Car & bike assistant',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white70,
-                    ),
+                    style: Theme.of(context).textTheme.labelSmall,
                   ),
                 ],
               ),
@@ -233,7 +227,7 @@ class _EmptyChat extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       fontSize: 24,
                       letterSpacing: -0.4,
-                      color: const Color(0xFF141414),
+                      color: AppColors.ink,
                       height: 1.2,
                     ),
               ),
@@ -243,7 +237,7 @@ class _EmptyChat extends StatelessWidget {
                 'and model comparisons — all in one place.',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.black.withValues(alpha: 0.5),
+                      color: AppColors.inkMuted,
                       height: 1.5,
                       fontSize: 14.5,
                     ),
@@ -254,7 +248,7 @@ class _EmptyChat extends StatelessWidget {
                 child: Text(
                   'Try asking',
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: Colors.black.withValues(alpha: 0.4),
+                        color: AppColors.inkFaint,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.3,
                       ),

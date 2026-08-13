@@ -46,7 +46,7 @@ class CustomerHomeScreen extends ConsumerWidget {
               );
             }
             return ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
               children: vehicles
                   .map((v) => _VehicleCard(vehicle: v, modelName: modelName(v.bikeModelId)))
                   .toList(),
@@ -66,53 +66,72 @@ class _VehicleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 14),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 52,
+                  height: 52,
                   decoration: BoxDecoration(
                     color: AppColors.yamahaBlue.withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: AppColors.yamahaBlue.withValues(alpha: 0.08),
+                    ),
                   ),
                   child: const Icon(Icons.two_wheeler, color: AppColors.yamahaBlue),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(modelName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                      Text(vehicle.registrationNo, style: const TextStyle(color: Colors.black54)),
+                      Text(modelName, style: theme.textTheme.titleMedium),
+                      const SizedBox(height: 2),
+                      Text(
+                        vehicle.registrationNo,
+                        style: theme.textTheme.bodySmall?.copyWith(color: AppColors.inkMuted),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                    vehicle.purchaseDate == null
-                        ? 'Purchase date not on file'
-                        : 'Purchased ${DateFormat('MMM yyyy').format(vehicle.purchaseDate!)}',
-                    style: const TextStyle(fontSize: 12, color: Colors.black54)),
-                Text('${vehicle.odometerKm} km', style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                  vehicle.purchaseDate == null
+                      ? 'Purchase date not on file'
+                      : 'Purchased ${DateFormat('MMM yyyy').format(vehicle.purchaseDate!)}',
+                  style: theme.textTheme.labelSmall,
+                ),
+                Text(
+                  '${vehicle.odometerKm} km',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: AppColors.inkMuted,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 14),
-            ElevatedButton.icon(
-              onPressed: () => context.push('/customer/home/analytics/${vehicle.id}'),
-              icon: const Icon(Icons.monitor_heart_outlined),
-              label: const Text('View live health & analytics'),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => context.push('/customer/home/analytics/${vehicle.id}'),
+                icon: const Icon(Icons.monitor_heart_outlined, size: 18),
+                label: const Text('View live health & analytics'),
+              ),
             ),
           ],
         ),

@@ -178,9 +178,9 @@ class _LeadDetailBody extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.phone, size: 15, color: Colors.black54),
+                    const Icon(Icons.phone, size: 15, color: AppColors.inkMuted),
                     const SizedBox(width: 4),
-                    Text(lead.mobile, style: const TextStyle(color: Colors.black54)),
+                    Text(lead.mobile, style: const TextStyle(color: AppColors.inkMuted)),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -190,7 +190,7 @@ class _LeadDetailBody extends ConsumerWidget {
                     children: [
                       StatusChip(status: lead.status),
                       const SizedBox(width: 6),
-                      const Icon(Icons.edit, size: 14, color: Colors.black38),
+                      const Icon(Icons.edit, size: 14, color: AppColors.inkFaint),
                     ],
                   ),
                 ),
@@ -296,7 +296,7 @@ class _InfoRow extends StatelessWidget {
         children: [
           SizedBox(
             width: 130,
-            child: Text(label, style: const TextStyle(color: Colors.black54, fontSize: 13)),
+            child: Text(label, style: const TextStyle(color: AppColors.inkMuted, fontSize: 13)),
           ),
           Expanded(child: Text(value, style: const TextStyle(fontSize: 14))),
         ],

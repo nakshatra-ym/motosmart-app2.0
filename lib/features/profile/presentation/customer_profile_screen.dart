@@ -10,38 +10,41 @@ class CustomerProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final customer = ref.watch(authControllerProvider).valueOrNull?.customer;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 28),
           children: [
             Center(
               child: CircleAvatar(
-                radius: 36,
+                radius: 40,
                 backgroundColor: AppColors.yamahaBlue,
                 child: Text(
                   (customer?.name ?? '?').substring(0, 1).toUpperCase(),
-                  style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Text(
               customer?.name ?? 'Unknown',
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge,
             ),
+            const SizedBox(height: 4),
             Text(
               'Yamaha Customer',
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: Colors.black.withValues(alpha: 0.6)),
+              style: theme.textTheme.bodySmall?.copyWith(color: AppColors.inkMuted),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             Card(
               child: Column(
                 children: [
@@ -59,7 +62,7 @@ class CustomerProfileScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
             OutlinedButton.icon(
               onPressed: () => ref.read(authControllerProvider.notifier).signOut(),
               icon: const Icon(Icons.logout),
