@@ -57,7 +57,7 @@ class IncentivesScreen extends ConsumerWidget {
                       const SizedBox(height: 8),
                       Text(
                         currency.format(summary.dealerTotal),
-                        style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                        style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w700),
                       ),
                     ],
                   ),

@@ -51,8 +51,8 @@ class CustomerProfileScreen extends ConsumerWidget {
                     (customer?.name ?? '?').substring(0, 1).toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 34,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),

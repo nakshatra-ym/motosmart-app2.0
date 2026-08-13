@@ -230,8 +230,8 @@ class _EmptyChat extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
-                      fontSize: 24,
-                      letterSpacing: -0.4,
+                      fontSize: 18,
+                      letterSpacing: -0.3,
                       color: AppColors.ink,
                       height: 1.2,
                     ),
@@ -243,8 +243,8 @@ class _EmptyChat extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.inkMuted,
-                      height: 1.5,
-                      fontSize: 14.5,
+                      height: 1.45,
+                      fontSize: 13,
                     ),
               ),
               const SizedBox(height: 28),

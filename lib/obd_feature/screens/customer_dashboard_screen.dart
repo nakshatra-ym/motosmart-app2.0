@@ -55,24 +55,41 @@ class CustomerDashboardScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 children: [
                   Card(
-                    color: Colors.green.shade50,
+                    color: AppColors.statusClosedWon.withValues(alpha: 0.12),
                     child: ListTile(
                       dense: true,
-                      leading: const Icon(Icons.bluetooth_connected, color: Colors.green),
-                      title: Text('Live data — ${dashboard.liveDeviceName}'),
+                      leading: const Icon(Icons.bluetooth_connected, color: AppColors.statusClosedWon),
+                      title: Text(
+                        'Live data — ${dashboard.liveDeviceName}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: AppColors.ink,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        'Bluetooth connected',
+                        style: TextStyle(color: AppColors.inkMuted, fontSize: 11.5),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   HealthBadge(health: health),
                   const SizedBox(height: 16),
-                  const Text('Live Telemetry',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(
+                    'Live Telemetry',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 8),
                   TelemetryGrid(reading: reading),
                   if (reading.activeDtcCodes.isNotEmpty) ...[
                     const SizedBox(height: 16),
-                    const Text('Active Alerts',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                    Text(
+                      'Active Alerts',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     ...reading.activeDtcCodes.map((code) => AlertCard(
                           dtcCode: code,
                           aiExplanation: dashboard.aiExplanation,
@@ -112,27 +129,31 @@ class _ConnectPrompt extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.bluetooth_searching, size: 64, color: Colors.blueGrey.shade300),
-            const SizedBox(height: 20),
+            const Icon(Icons.bluetooth_searching, size: 52, color: AppColors.inkFaint),
+            const SizedBox(height: 18),
             const Text(
               'Connect your OBD device',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.ink,
+              ),
             ),
             const SizedBox(height: 10),
-            Text(
+            const Text(
               'Live readings come from the ELM327 plugged into your bike. '
               'Pair the device over Bluetooth to see engine speed, coolant '
               'temperature, battery voltage and any fault codes.',
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13, color: AppColors.inkMuted),
+              style: TextStyle(fontSize: 12.5, color: AppColors.inkMuted, height: 1.4),
             ),
             if (error != null) ...[
               const SizedBox(height: 16),
               Text(
                 error!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 13, color: Colors.red),
+                style: const TextStyle(fontSize: 12.5, color: AppColors.hot),
               ),
             ],
             const SizedBox(height: 24),

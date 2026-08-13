@@ -130,7 +130,7 @@ class DealerDashboardScreen extends ConsumerWidget {
                                         AnimatedMetric(
                                           value: data.hotLeadsCount,
                                           style: theme.textTheme.displaySmall?.copyWith(
-                                            fontSize: 34,
+                                            fontSize: 28,
                                             fontWeight: FontWeight.w700,
                                             color: AppColors.ink,
                                           ),

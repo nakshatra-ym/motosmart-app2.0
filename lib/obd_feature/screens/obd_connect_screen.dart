@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue_classic/flutter_blue_classic.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/config/theme.dart';
 import '../state/dashboard_provider.dart';
 
 /// Lets the rider pick an already-paired Bluetooth device (a real ELM327,
@@ -83,10 +84,19 @@ class _ObdConnectScreenState extends State<ObdConnectScreen> {
           if (dashboard.isLive)
             Card(
               margin: const EdgeInsets.all(12),
-              color: Colors.green.shade50,
+              color: AppColors.statusClosedWon.withValues(alpha: 0.12),
               child: ListTile(
-                leading: const Icon(Icons.bluetooth_connected, color: Colors.green),
-                title: Text('Connected — ${dashboard.liveDeviceName}'),
+                leading: const Icon(Icons.bluetooth_connected, color: AppColors.statusClosedWon),
+                title: Text(
+                  'Connected — ${dashboard.liveDeviceName}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.ink,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
                 trailing: TextButton(
                   onPressed: () => dashboard.disconnectDevice(),
                   child: const Text('Disconnect'),

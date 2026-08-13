@@ -82,22 +82,28 @@ class _MotoSmartAppState extends ConsumerState<MotoSmartApp>
       color: AppColors.canvasDeep,
       routerConfig: router,
       builder: (context, child) {
-        return ColoredBox(
-          color: AppColors.canvasDeep,
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              if (_appVisible && child != null) child,
-              if (_introVisible)
-                FadeTransition(
-                  opacity: Tween<double>(begin: 1, end: 0).animate(
-                    CurvedAnimation(parent: _exit, curve: Curves.easeInOut),
+        final scaled = MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: const TextScaler.linear(0.92),
+          ),
+          child: ColoredBox(
+            color: AppColors.canvasDeep,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                if (_appVisible && child != null) child,
+                if (_introVisible)
+                  FadeTransition(
+                    opacity: Tween<double>(begin: 1, end: 0).animate(
+                      CurvedAnimation(parent: _exit, curve: Curves.easeInOut),
+                    ),
+                    child: _OpeningSplash(enter: _enter),
                   ),
-                  child: _OpeningSplash(enter: _enter),
-                ),
-            ],
+              ],
+            ),
           ),
         );
+        return scaled;
       },
     );
   }

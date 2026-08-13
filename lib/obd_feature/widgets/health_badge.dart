@@ -31,9 +31,9 @@ class HealthBadge extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.4), width: 1.5),
+        border: Border.all(color: color.withValues(alpha: 0.4), width: 1.5),
       ),
       child: Row(
         children: [
@@ -47,23 +47,23 @@ class HealthBadge extends StatelessWidget {
                   _label(),
                   style: TextStyle(
                     color: color,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
                   ),
                 ),
                 if (health.reasons.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
                     health.reasons.first,
-                    style: TextStyle(color: color.withOpacity(0.85), fontSize: 13),
+                    style: TextStyle(color: color.withValues(alpha: 0.85), fontSize: 12),
                   ),
                 ],
                 const SizedBox(height: 4),
                 Text(
                   'Rule-based · SAE diagnostic standards',
                   style: TextStyle(
-                    color: color.withOpacity(0.6),
-                    fontSize: 11,
+                    color: color.withValues(alpha: 0.6),
+                    fontSize: 10.5,
                     fontStyle: FontStyle.italic,
                   ),
                 ),

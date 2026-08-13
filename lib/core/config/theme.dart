@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// Motospot dark-first system — Product Hunt / hackathon wow palette.
 ///
@@ -52,6 +52,12 @@ class AppTheme {
   static const double radiusLg = 24;
   static const double radiusXl = 32;
 
+  /// Apple SF Pro on iOS/macOS; platform default (Roboto) elsewhere.
+  static String? get _fontFamily => switch (defaultTargetPlatform) {
+        TargetPlatform.iOS || TargetPlatform.macOS => '.SF Pro Text',
+        _ => null,
+      };
+
   static List<BoxShadow> get softShadow => [
         BoxShadow(
           color: Colors.black.withValues(alpha: 0.45),
@@ -76,81 +82,85 @@ class AppTheme {
   static ThemeData get light => dark; // app is dark-first
 
   static ThemeData get dark {
-    final baseText = GoogleFonts.plusJakartaSansTextTheme(ThemeData.dark().textTheme);
+    final baseText = ThemeData(
+      brightness: Brightness.dark,
+      useMaterial3: true,
+      fontFamily: _fontFamily,
+    ).textTheme;
 
     final textTheme = baseText.apply(bodyColor: AppColors.ink, displayColor: AppColors.ink).copyWith(
           displaySmall: baseText.displaySmall?.copyWith(
             fontWeight: FontWeight.w700,
-            letterSpacing: -0.4,
+            letterSpacing: -0.3,
             height: 1.15,
             color: AppColors.ink,
-            fontSize: 28,
+            fontSize: 24,
           ),
           headlineMedium: baseText.headlineMedium?.copyWith(
             fontWeight: FontWeight.w700,
-            letterSpacing: -0.3,
+            letterSpacing: -0.25,
             height: 1.2,
             color: AppColors.ink,
-            fontSize: 24,
+            fontSize: 20,
           ),
           headlineSmall: baseText.headlineSmall?.copyWith(
             fontWeight: FontWeight.w600,
             letterSpacing: -0.2,
             height: 1.25,
             color: AppColors.ink,
-            fontSize: 19,
+            fontSize: 17,
           ),
           titleLarge: baseText.titleLarge?.copyWith(
             fontWeight: FontWeight.w600,
             letterSpacing: -0.15,
             color: AppColors.ink,
-            fontSize: 16,
+            fontSize: 15,
           ),
           titleMedium: baseText.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
             letterSpacing: -0.1,
             color: AppColors.ink,
-            fontSize: 14.5,
+            fontSize: 13.5,
           ),
           titleSmall: baseText.titleSmall?.copyWith(
             fontWeight: FontWeight.w600,
             color: AppColors.ink,
-            fontSize: 13,
+            fontSize: 12.5,
           ),
           bodyLarge: baseText.bodyLarge?.copyWith(
-            fontSize: 14.5,
-            height: 1.45,
+            fontSize: 13.5,
+            height: 1.4,
             color: AppColors.ink,
             fontWeight: FontWeight.w400,
           ),
           bodyMedium: baseText.bodyMedium?.copyWith(
-            fontSize: 13,
-            height: 1.45,
+            fontSize: 12.5,
+            height: 1.4,
             color: AppColors.inkMuted,
             fontWeight: FontWeight.w400,
           ),
           bodySmall: baseText.bodySmall?.copyWith(
-            fontSize: 12,
-            height: 1.4,
+            fontSize: 11.5,
+            height: 1.35,
             color: AppColors.inkFaint,
             fontWeight: FontWeight.w400,
           ),
           labelLarge: baseText.labelLarge?.copyWith(
             fontWeight: FontWeight.w600,
-            letterSpacing: 0.1,
-            fontSize: 13,
+            letterSpacing: 0.05,
+            fontSize: 12.5,
           ),
           labelMedium: baseText.labelMedium?.copyWith(
             fontWeight: FontWeight.w500,
             color: AppColors.inkMuted,
-            letterSpacing: 0.1,
-            fontSize: 11.5,
+            letterSpacing: 0.05,
+            fontSize: 11,
           ),
           labelSmall: baseText.labelSmall?.copyWith(
             fontWeight: FontWeight.w500,
             color: AppColors.inkFaint,
-            letterSpacing: 0.15,
-            fontSize: 10.5,
+            letterSpacing: 0.1,
+            fontSize: 10,
           ),
         );
 
@@ -174,13 +184,14 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
+      fontFamily: _fontFamily,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.canvas,
       canvasColor: AppColors.canvas,
       dividerColor: AppColors.border,
       textTheme: textTheme,
       primaryTextTheme: textTheme,
-      iconTheme: const IconThemeData(color: AppColors.inkMuted, size: 22),
+      iconTheme: const IconThemeData(color: AppColors.inkMuted, size: 20),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         foregroundColor: AppColors.ink,
@@ -190,33 +201,33 @@ class AppTheme {
         titleSpacing: 18,
         systemOverlayStyle: SystemUiOverlayStyle.light,
         titleTextStyle: textTheme.titleLarge?.copyWith(
-          fontSize: 16,
+          fontSize: 15,
           fontWeight: FontWeight.w600,
-          letterSpacing: -0.2,
+          letterSpacing: -0.15,
           color: AppColors.ink,
         ),
-        iconTheme: const IconThemeData(color: AppColors.ink, size: 22),
-        actionsIconTheme: const IconThemeData(color: AppColors.ink, size: 22),
+        iconTheme: const IconThemeData(color: AppColors.ink, size: 20),
+        actionsIconTheme: const IconThemeData(color: AppColors.ink, size: 20),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: const Color(0xE60A0D14),
         elevation: 0,
-        height: 72,
+        height: 68,
         indicatorColor: AppColors.yamahaBlue.withValues(alpha: 0.22),
         indicatorShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return textTheme.labelSmall?.copyWith(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
             color: selected ? AppColors.ink : AppColors.inkFaint,
           );
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           final selected = states.contains(WidgetState.selected);
           return IconThemeData(
-            size: 22,
+            size: 20,
             color: selected ? AppColors.yamahaBlue : AppColors.inkFaint,
           );
         }),
@@ -237,7 +248,7 @@ class AppTheme {
         fillColor: const Color(0x14FFFFFF),
         hintStyle: textTheme.bodyMedium?.copyWith(color: AppColors.inkFaint),
         labelStyle: textTheme.bodyMedium?.copyWith(color: AppColors.inkMuted),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMd),
           borderSide: const BorderSide(color: AppColors.glassBorder),
@@ -266,10 +277,10 @@ class AppTheme {
           disabledBackgroundColor: AppColors.yamahaRed.withValues(alpha: 0.35),
           disabledForegroundColor: Colors.white70,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 22),
-          minimumSize: const Size(44, 44),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+          minimumSize: const Size(44, 42),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMd)),
-          textStyle: textTheme.labelLarge?.copyWith(fontSize: 15, fontWeight: FontWeight.w700),
+          textStyle: textTheme.labelLarge?.copyWith(fontSize: 13, fontWeight: FontWeight.w600),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
@@ -277,10 +288,10 @@ class AppTheme {
           backgroundColor: AppColors.yamahaBlue,
           foregroundColor: Colors.white,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 22),
-          minimumSize: const Size(44, 44),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+          minimumSize: const Size(44, 42),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMd)),
-          textStyle: textTheme.labelLarge?.copyWith(fontSize: 15, fontWeight: FontWeight.w700),
+          textStyle: textTheme.labelLarge?.copyWith(fontSize: 13, fontWeight: FontWeight.w600),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -288,16 +299,16 @@ class AppTheme {
           foregroundColor: AppColors.ink,
           backgroundColor: const Color(0x0DFFFFFF),
           side: const BorderSide(color: AppColors.glassBorder),
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 22),
-          minimumSize: const Size(44, 44),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 18),
+          minimumSize: const Size(44, 42),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMd)),
-          textStyle: textTheme.labelLarge?.copyWith(fontSize: 15, fontWeight: FontWeight.w600),
+          textStyle: textTheme.labelLarge?.copyWith(fontSize: 13, fontWeight: FontWeight.w600),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.yamahaBlue,
-          textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+          textStyle: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -311,14 +322,14 @@ class AppTheme {
         selectedColor: AppColors.yamahaBlue.withValues(alpha: 0.22),
         side: const BorderSide(color: AppColors.glassBorder),
         labelStyle: textTheme.labelMedium?.copyWith(color: AppColors.ink),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       dividerTheme: const DividerThemeData(color: AppColors.border, thickness: 1, space: 1),
       listTileTheme: ListTileThemeData(
         iconColor: AppColors.inkMuted,
         textColor: AppColors.ink,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radiusMd)),
       ),
       bottomSheetTheme: const BottomSheetThemeData(
