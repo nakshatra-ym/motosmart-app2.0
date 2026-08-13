@@ -119,6 +119,37 @@ class _TicketThreadScreenState extends ConsumerState<TicketThreadScreen> {
             ),
             orElse: () => const SizedBox.shrink(),
           ),
+          // Closing a ticket credits an incentive to whoever did it, so the
+          // thread states plainly who that was.
+          ticketAsync.maybeWhen(
+            data: (ticket) => ticket.resolvedByName == null
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.check_circle,
+                          size: 15,
+                          color: AppColors.statusClosedWon,
+                        ),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(
+                            'Closed by ${ticket.resolvedByName}'
+                            '${ticket.resolvedAt != null ? ' on ${DateFormat('d MMM, h:mm a').format(ticket.resolvedAt!)}' : ''}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.statusClosedWon,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+            orElse: () => const SizedBox.shrink(),
+          ),
           const Divider(height: 1),
           Expanded(
             child: AsyncValueWidget<List<ServiceMessage>>(

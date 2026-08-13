@@ -11,6 +11,7 @@ class EmployeeIncentive {
     required this.conversionsCount,
     required this.testRidesCount,
     required this.totalIncentive,
+    this.ticketsResolvedCount = 0,
   });
 
   final String employeeId;
@@ -19,6 +20,9 @@ class EmployeeIncentive {
   final int leadsCount;
   final int conversionsCount;
   final int testRidesCount;
+
+  /// Service tickets this employee closed in the period.
+  final int ticketsResolvedCount;
   final double totalIncentive;
 
   factory EmployeeIncentive.fromJson(Map<String, dynamic> json) => EmployeeIncentive(
@@ -28,6 +32,7 @@ class EmployeeIncentive {
         leadsCount: asInt(json['leads_count']),
         conversionsCount: asInt(json['conversions_count']),
         testRidesCount: asInt(json['test_rides_count']),
+        ticketsResolvedCount: asInt(json['tickets_resolved_count']),
         totalIncentive: asDouble(json['total_incentive']),
       );
 }

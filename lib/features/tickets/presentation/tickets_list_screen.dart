@@ -118,10 +118,34 @@ class TicketsListScreen extends ConsumerWidget {
                             style: theme.textTheme.bodyMedium?.copyWith(color: AppColors.inkMuted),
                           ),
                           const SizedBox(height: 10),
-                          Text(
-                            DateFormat('d MMM yyyy, h:mm a').format(ticket.createdAt),
-                            style: theme.textTheme.labelSmall,
-                          ),
+                          // A closed ticket earns its closer an incentive, so
+                          // the queue names who takes credit for it.
+                          if (ticket.resolvedByName != null)
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.check_circle,
+                                  size: 13,
+                                  color: AppColors.statusClosedWon,
+                                ),
+                                const SizedBox(width: 5),
+                                Expanded(
+                                  child: Text(
+                                    'Closed by ${ticket.resolvedByName}'
+                                    '${ticket.resolvedAt != null ? ' · ${DateFormat('d MMM').format(ticket.resolvedAt!)}' : ''}',
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: AppColors.statusClosedWon,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          else
+                            Text(
+                              DateFormat('d MMM yyyy, h:mm a').format(ticket.createdAt),
+                              style: theme.textTheme.labelSmall,
+                            ),
                         ],
                       ),
                     ),

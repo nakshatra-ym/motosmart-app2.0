@@ -6,6 +6,7 @@ import '../../../data/api/api_tickets_repository.dart';
 import '../../../core/auth/auth_controller.dart';
 import '../../../data/mock/mock_providers.dart';
 import '../../../data/mock/mock_tickets_repository.dart';
+import '../../incentives/data/incentives_providers.dart';
 import '../../../models/enums.dart';
 import '../../../models/service_message.dart';
 import '../../../models/service_request.dart';
@@ -50,6 +51,10 @@ final ticketMessagesProvider =
 /// and thread all reflect it immediately.
 void invalidateTicketsData(WidgetRef ref, {String? ticketId}) {
   ref.invalidate(ticketsListProvider);
+  // Resolving a ticket earns its closer an incentive, so the rollup is stale the
+  // moment a status changes. Every ticket mutation routes through here, which is
+  // why the invalidation lives here rather than at each call site.
+  ref.invalidate(incentiveSummaryProvider);
   if (ticketId != null) {
     ref.invalidate(ticketDetailProvider(ticketId));
     ref.invalidate(ticketMessagesProvider(ticketId));

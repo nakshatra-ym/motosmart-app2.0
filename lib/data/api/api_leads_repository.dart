@@ -2,6 +2,7 @@ import '../../core/network/api_client.dart';
 import '../../features/leads/data/leads_repository.dart';
 import '../../models/bike_model.dart';
 import '../../models/customer.dart';
+import '../../models/lead_conversion.dart';
 import '../../models/enums.dart';
 import '../../models/json_utils.dart';
 import '../../models/lead.dart';
@@ -87,12 +88,15 @@ class ApiLeadsRepository implements LeadsRepository {
   }
 
   @override
-  Future<Customer> convertLead(String id, {required String email}) async {
+  Future<LeadConversion> convertLead(String id, {required String email}) async {
     final response = await _api.post(
       '/leads/$id/convert',
       body: {if (email.isNotEmpty) 'email': email},
     );
-    return Customer.fromJson(asMap(response['customer']));
+    return LeadConversion.fromJson(
+      response,
+      Customer.fromJson(asMap(response['customer'])),
+    );
   }
 
   @override

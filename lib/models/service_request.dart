@@ -18,6 +18,8 @@ class ServiceRequest {
     this.customerName,
     this.customerPhone,
     this.vehicleLabel,
+    this.resolvedByName,
+    this.resolvedAt,
   });
 
   final String id;
@@ -43,6 +45,12 @@ class ServiceRequest {
   final String? customerPhone;
   final String? vehicleLabel;
 
+  /// The employee who closed it, and when. Null until somebody resolves it —
+  /// re-opening a ticket clears both, because the incentive it earned is
+  /// withdrawn with the closure.
+  final String? resolvedByName;
+  final DateTime? resolvedAt;
+
   ServiceRequest copyWith({ServiceRequestStatus? status}) => ServiceRequest(
         id: id,
         vehicleId: vehicleId,
@@ -59,6 +67,8 @@ class ServiceRequest {
         customerName: customerName,
         customerPhone: customerPhone,
         vehicleLabel: vehicleLabel,
+        resolvedByName: resolvedByName,
+        resolvedAt: resolvedAt,
       );
 
   factory ServiceRequest.fromJson(Map<String, dynamic> json) => ServiceRequest(
@@ -78,6 +88,8 @@ class ServiceRequest {
         customerName: json['customer_name'] as String?,
         customerPhone: json['customer_phone'] as String?,
         vehicleLabel: json['vehicle_label'] as String?,
+        resolvedByName: json['resolved_by_name'] as String?,
+        resolvedAt: asDateOrNull(json['resolved_at']),
       );
 
   Map<String, dynamic> toJson() => {
@@ -96,5 +108,7 @@ class ServiceRequest {
         'customer_name': customerName,
         'customer_phone': customerPhone,
         'vehicle_label': vehicleLabel,
+        'resolved_by_name': resolvedByName,
+        'resolved_at': resolvedAt?.toIso8601String(),
       };
 }

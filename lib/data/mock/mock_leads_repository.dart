@@ -2,6 +2,7 @@ import '../../core/network/api_exception.dart';
 import '../../features/leads/data/leads_repository.dart';
 import '../../models/bike_model.dart';
 import '../../models/customer.dart';
+import '../../models/lead_conversion.dart';
 import '../../models/enums.dart';
 import '../../models/lead.dart';
 import '../../models/lead_followup.dart';
@@ -123,7 +124,7 @@ class MockLeadsRepository implements LeadsRepository {
   }
 
   @override
-  Future<Customer> convertLead(String id, {required String email}) async {
+  Future<LeadConversion> convertLead(String id, {required String email}) async {
     await _simulateLatency();
     final index = _store.leads.indexWhere((l) => l.id == id);
     if (index == -1) throw const ApiException('Lead not found.', statusCode: 404);
@@ -145,7 +146,8 @@ class MockLeadsRepository implements LeadsRepository {
       updatedAt: DateTime.now(),
     );
 
-    return customer;
+    // Offline mode has no Cognito to fail against.
+    return LeadConversion(customer: customer, invited: true);
   }
 
   @override

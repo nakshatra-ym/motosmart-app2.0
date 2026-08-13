@@ -1,5 +1,6 @@
 import '../../../models/bike_model.dart';
 import '../../../models/customer.dart';
+import '../../../models/lead_conversion.dart';
 import '../../../models/enums.dart';
 import '../../../models/lead.dart';
 import '../../../models/lead_followup.dart';
@@ -35,7 +36,7 @@ abstract class LeadsRepository {
 
   /// `POST /leads/{id}/convert` — creates a customer record, marks the lead
   /// CLOSED_WON.
-  Future<Customer> convertLead(String id, {required String email});
+  Future<LeadConversion> convertLead(String id, {required String email});
 
   Future<List<LeadFollowup>> listFollowups(String leadId);
 
