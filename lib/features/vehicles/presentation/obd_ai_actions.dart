@@ -131,85 +131,150 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (sheetContext) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.auto_awesome, color: AppColors.yamahaBlue),
-                const SizedBox(width: 8),
-                const Expanded(
-                  child: Text(
-                    'Bike health summary',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+      backgroundColor: Colors.white,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.yamahaBlue.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      Icons.auto_awesome,
+                      color: AppColors.yamahaBlue,
+                      size: 20,
+                    ),
                   ),
-                ),
-                // Honest about provenance: says so when the model was unreachable
-                // and the deterministic rules answered instead.
-                Chip(
-                  visualDensity: VisualDensity.compact,
-                  label: Text(
-                    summary.isAiGenerated ? 'AI generated' : 'Rule-based',
-                    style: const TextStyle(fontSize: 11),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Bike health summary',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 17,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          summary.isAiGenerated ? 'AI generated insight' : 'Rule-based insight',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.black.withValues(alpha: 0.45),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Semantics(
+                    label: summary.isAiGenerated ? 'AI generated' : 'Rule-based',
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: AppColors.yamahaBlue.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(999),
+                        border: Border.all(
+                          color: AppColors.yamahaBlue.withValues(alpha: 0.16),
+                        ),
+                      ),
+                      child: Text(
+                        summary.isAiGenerated ? 'AI' : 'Rules',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.yamahaBlue,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (summary.samplesUsed > 0) ...[
+                const SizedBox(height: 14),
+                Text(
+                  'Based on ${summary.samplesUsed} readings'
+                  '${summary.windowSeconds != null ? ' over the last ${summary.windowSeconds}s' : ''}.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.black.withValues(alpha: 0.4),
+                    height: 1.35,
                   ),
                 ),
               ],
-            ),
-            if (summary.samplesUsed > 0) ...[
-              const SizedBox(height: 4),
-              Text(
-                'Based on ${summary.samplesUsed} readings'
-                '${summary.windowSeconds != null ? ' over the last ${summary.windowSeconds}s' : ''}.',
-                style: const TextStyle(fontSize: 11, color: Colors.black45),
-              ),
-            ],
-            const SizedBox(height: 12),
-            Text(summary.summary, style: const TextStyle(fontSize: 15, height: 1.45)),
-            const SizedBox(height: 20),
-            if (summary.isActionable) ...[
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.hot.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(10),
+              const SizedBox(height: 16),
+              SelectableText(
+                summary.summary,
+                style: const TextStyle(
+                  fontSize: 15,
+                  height: 1.5,
+                  color: Color(0xFF1A1A1A),
                 ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.warning_amber, color: AppColors.hot, size: 20),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'These readings are worth a dealer check.',
-                        style: TextStyle(fontSize: 13),
+              ),
+              const SizedBox(height: 22),
+              if (summary.isActionable) ...[
+                Semantics(
+                  liveRegion: true,
+                  child: Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.hot.withValues(alpha: 0.07),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: AppColors.hot.withValues(alpha: 0.18),
                       ),
                     ),
-                  ],
+                    child: const Row(
+                      children: [
+                        Icon(Icons.warning_amber_rounded, color: AppColors.hot, size: 20),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'These readings are worth a dealer check.',
+                            style: TextStyle(fontSize: 13.5, height: 1.35),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(sheetContext).pop();
-                    _raiseTicket(summary);
-                  },
-                  icon: const Icon(Icons.confirmation_number_outlined),
-                  label: const Text('Raise a service ticket'),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.of(sheetContext).pop();
+                      _raiseTicket(summary);
+                    },
+                    icon: const Icon(Icons.confirmation_number_outlined, size: 18),
+                    label: const Text('Raise a service ticket'),
+                  ),
                 ),
-              ),
-            ] else
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.of(sheetContext).pop(),
-                  child: const Text('Close'),
+              ] else
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(sheetContext).pop(),
+                    child: const Text('Close'),
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -244,26 +309,32 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
     // is better than offering a button that would describe an empty dashboard.
     if (!dashboard.isLive) {
       return Material(
-        elevation: 8,
         color: Colors.white,
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-            child: Row(
-              children: [
-                Icon(Icons.info_outline, size: 16, color: Colors.black.withValues(alpha: 0.45)),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Connect your OBD device to get an AI health summary.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.black.withValues(alpha: 0.55),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(top: BorderSide(color: Colors.black.withValues(alpha: 0.06))),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, size: 18, color: Colors.black.withValues(alpha: 0.4)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Connect your OBD device to get an AI health summary.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        height: 1.35,
+                        color: Colors.black.withValues(alpha: 0.55),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -271,85 +342,133 @@ class _ObdAiActionsState extends ConsumerState<ObdAiActions> {
     }
 
     return Material(
-      elevation: 8,
       color: Colors.white,
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_error != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    _error!,
-                    style: const TextStyle(color: AppColors.hot, fontSize: 12),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _loading ? null : _summarise,
-                      icon: _loading
-                          ? const SizedBox(
-                              height: 16,
-                              width: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Icon(Icons.auto_awesome, size: 18),
-                      label: Text(_loading ? 'Analysing…' : 'AI summary'),
-                    ),
-                  ),
-                  if (actionable) ...[
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _raiseTicket(
-                          _summary ??
-                              const TelemetrySummary(
-                                summary: '',
-                                source: 'fallback',
-                                isActionable: true,
-                              ),
-                        ),
-                        icon: const Icon(Icons.confirmation_number_outlined, size: 18),
-                        label: const Text('Raise ticket'),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.black.withValues(alpha: 0.06))),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 12,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        _error!,
+                        style: const TextStyle(color: AppColors.hot, fontSize: 12, height: 1.35),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ],
-                ],
-              ),
-              if (_summary != null && !_loading)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: InkWell(
-                    onTap: () => _showSheet(_summary!),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.auto_awesome, size: 14, color: Colors.black45),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            _summary!.summary,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 12, color: Colors.black54),
+                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          onPressed: _loading ? null : _summarise,
+                          icon: _loading
+                              ? const SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Icon(Icons.auto_awesome, size: 18),
+                          label: Text(_loading ? 'Analysing…' : 'AI summary'),
+                        ),
+                      ),
+                    ),
+                    if (actionable) ...[
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: SizedBox(
+                          height: 48,
+                          child: OutlinedButton.icon(
+                            onPressed: () => _raiseTicket(
+                              _summary ??
+                                  const TelemetrySummary(
+                                    summary: '',
+                                    source: 'fallback',
+                                    isActionable: true,
+                                  ),
+                            ),
+                            icon: const Icon(Icons.confirmation_number_outlined, size: 18),
+                            label: const Text('Raise ticket'),
                           ),
                         ),
-                        const Text('Read', style: TextStyle(fontSize: 12, color: AppColors.yamahaBlue)),
-                      ],
+                      ),
+                    ],
+                  ],
+                ),
+                if (_summary != null && !_loading)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Semantics(
+                      button: true,
+                      label: 'Open AI health summary',
+                      child: InkWell(
+                        onTap: () => _showSheet(_summary!),
+                        borderRadius: BorderRadius.circular(12),
+                        child: Ink(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: AppColors.background,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.black.withValues(alpha: 0.06)),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.auto_awesome,
+                                size: 14,
+                                color: AppColors.yamahaBlue.withValues(alpha: 0.7),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _summary!.summary,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    color: Colors.black.withValues(alpha: 0.55),
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                'Read',
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.yamahaBlue.withValues(alpha: 0.9),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
