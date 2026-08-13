@@ -76,57 +76,79 @@ class AppTheme {
   static ThemeData get light => dark; // app is dark-first
 
   static ThemeData get dark {
-    final display = GoogleFonts.spaceGroteskTextTheme(ThemeData.dark().textTheme);
-    final body = GoogleFonts.manropeTextTheme(ThemeData.dark().textTheme);
+    final baseText = GoogleFonts.plusJakartaSansTextTheme(ThemeData.dark().textTheme);
 
-    final textTheme = body.apply(bodyColor: AppColors.ink, displayColor: AppColors.ink).copyWith(
-          displaySmall: display.displaySmall?.copyWith(
+    final textTheme = baseText.apply(bodyColor: AppColors.ink, displayColor: AppColors.ink).copyWith(
+          displaySmall: baseText.displaySmall?.copyWith(
             fontWeight: FontWeight.w700,
-            letterSpacing: -1.4,
-            height: 1.05,
-            color: AppColors.ink,
-            fontSize: 40,
-          ),
-          headlineMedium: display.headlineMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            letterSpacing: -1.1,
-            height: 1.1,
-            color: AppColors.ink,
-            fontSize: 32,
-          ),
-          headlineSmall: display.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.8,
+            letterSpacing: -0.5,
             height: 1.15,
             color: AppColors.ink,
-            fontSize: 24,
+            fontSize: 34,
           ),
-          titleLarge: display.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
+          headlineMedium: baseText.headlineMedium?.copyWith(
+            fontWeight: FontWeight.w700,
             letterSpacing: -0.4,
+            height: 1.2,
+            color: AppColors.ink,
+            fontSize: 28,
+          ),
+          headlineSmall: baseText.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.3,
+            height: 1.25,
+            color: AppColors.ink,
+            fontSize: 22,
+          ),
+          titleLarge: baseText.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.2,
             color: AppColors.ink,
             fontSize: 18,
           ),
-          titleMedium: display.titleMedium?.copyWith(
+          titleMedium: baseText.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            letterSpacing: -0.3,
+            letterSpacing: -0.1,
             color: AppColors.ink,
             fontSize: 16,
           ),
-          titleSmall: display.titleSmall?.copyWith(
+          titleSmall: baseText.titleSmall?.copyWith(
             fontWeight: FontWeight.w600,
             color: AppColors.ink,
             fontSize: 14,
           ),
-          bodyLarge: body.bodyLarge?.copyWith(fontSize: 16, height: 1.5, color: AppColors.ink),
-          bodyMedium: body.bodyMedium?.copyWith(fontSize: 14.5, height: 1.5, color: AppColors.inkMuted),
-          bodySmall: body.bodySmall?.copyWith(fontSize: 13, height: 1.45, color: AppColors.inkFaint),
-          labelLarge: display.labelLarge?.copyWith(fontWeight: FontWeight.w600, letterSpacing: 0.2, fontSize: 14),
-          labelMedium: body.labelMedium?.copyWith(fontWeight: FontWeight.w600, color: AppColors.inkMuted),
-          labelSmall: body.labelSmall?.copyWith(
-            fontWeight: FontWeight.w600,
+          bodyLarge: baseText.bodyLarge?.copyWith(
+            fontSize: 16,
+            height: 1.5,
+            color: AppColors.ink,
+            fontWeight: FontWeight.w400,
+          ),
+          bodyMedium: baseText.bodyMedium?.copyWith(
+            fontSize: 14,
+            height: 1.5,
+            color: AppColors.inkMuted,
+            fontWeight: FontWeight.w400,
+          ),
+          bodySmall: baseText.bodySmall?.copyWith(
+            fontSize: 13,
+            height: 1.45,
             color: AppColors.inkFaint,
-            letterSpacing: 0.8,
+            fontWeight: FontWeight.w400,
+          ),
+          labelLarge: baseText.labelLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.1,
+            fontSize: 14,
+          ),
+          labelMedium: baseText.labelMedium?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: AppColors.inkMuted,
+            letterSpacing: 0.1,
+          ),
+          labelSmall: baseText.labelSmall?.copyWith(
+            fontWeight: FontWeight.w500,
+            color: AppColors.inkFaint,
+            letterSpacing: 0.2,
             fontSize: 11,
           ),
         );

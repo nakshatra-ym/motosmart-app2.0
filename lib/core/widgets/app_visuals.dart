@@ -272,20 +272,20 @@ class MotospotMark extends StatelessWidget {
         ),
         SizedBox(height: compact ? 14 : 22),
         Text(
-          'MOTOSPOT',
+          'Motospot',
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: AppColors.ink,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 3.2,
-                fontSize: compact ? 22 : 30,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.4,
+                fontSize: compact ? 24 : 30,
               ),
         ),
         const SizedBox(height: 8),
         Text(
-          'THE INTELLIGENT DEALER OS',
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          'Dealer intelligence',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: AppColors.inkMuted,
-                letterSpacing: 2.4,
+                letterSpacing: 0.1,
               ),
         ),
       ],
