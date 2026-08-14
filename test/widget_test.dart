@@ -40,7 +40,8 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('Yamaha Bikes'), findsOneWidget);
+    expect(find.text('YAMAHA'), findsOneWidget);
+    expect(find.text('Find your next ride.'), findsOneWidget);
     expect(find.text('Sign in'), findsOneWidget);
     expect(find.text('YZF-R15 V4 M'), findsOneWidget);
   });
@@ -88,10 +89,10 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Test ride').first);
+    await tester.tap(find.text('Book a test ride').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Book a test ride'), findsOneWidget);
+    expect(find.text('Book a test ride'), findsWidgets);
 
     await tester.enterText(find.widgetWithText(TextFormField, 'Your name *'), 'Guest Rider');
     await tester.enterText(find.widgetWithText(TextFormField, 'Mobile number *'), '9887766554');
