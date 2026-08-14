@@ -1,4 +1,5 @@
 import '../../models/customer.dart';
+import '../../models/dealer.dart';
 import '../../models/employee.dart';
 import '../../models/enums.dart';
 
@@ -11,6 +12,7 @@ class Session {
     required this.role,
     this.employee,
     this.customer,
+    this.dealer,
   });
 
   final String token;
@@ -21,4 +23,9 @@ class Session {
 
   /// Populated for [UserRole.customer].
   final Customer? customer;
+
+  /// The branch this identity belongs to — the employee's own dealer, or the
+  /// customer's onboarding dealer. `GET /me` returns it with the profile, so no
+  /// screen has to look one up from a catalogue it may not hold.
+  final Dealer? dealer;
 }

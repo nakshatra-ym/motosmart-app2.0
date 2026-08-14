@@ -5,8 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../core/auth/auth_controller.dart';
 import '../../../core/config/theme.dart';
 import '../../../core/widgets/app_visuals.dart';
-import '../../../data/mock/mock_providers.dart';
-import '../../../models/dealer.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -15,17 +13,11 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final session = ref.watch(authControllerProvider).valueOrNull;
     final employee = session?.employee;
-    final store = ref.watch(mockDataStoreProvider);
     final theme = Theme.of(context);
-    Dealer? dealer;
-    if (employee != null) {
-      for (final d in store.dealers) {
-        if (d.id == employee.dealerId) {
-          dealer = d;
-          break;
-        }
-      }
-    }
+    // Comes with `GET /me`. It used to be looked up in the offline mock store,
+    // which holds no real branches, so signed-in staff saw a dash where their
+    // own dealer should be.
+    final dealer = session?.dealer;
 
     return AppPageBackground(
       child: Scaffold(
@@ -125,7 +117,12 @@ class ProfileScreen extends ConsumerWidget {
                         color: AppColors.warm,
                       ),
                       title: const Text('Dealer'),
-                      subtitle: Text(dealer == null ? '—' : '${dealer.name} · ${dealer.city}'),
+                      subtitle: Text(
+                        dealer == null
+                            ? '—'
+                            : '${dealer.name} · ${dealer.code}\n${dealer.address}',
+                      ),
+                      isThreeLine: dealer != null,
                     ),
                   ],
                 ),

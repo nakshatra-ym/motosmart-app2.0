@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 import '../../models/customer.dart';
+import '../../models/dealer.dart';
 import '../../models/employee.dart';
 import '../../models/enums.dart';
 import '../../models/json_utils.dart';
@@ -180,12 +181,14 @@ class ApiAuthRepository implements AuthRepository {
 
     final employeeJson = asMap(me['employee']);
     final customerJson = asMap(me['customer']);
+    final dealerJson = asMap(me['dealer']);
 
     return Session(
       token: token,
       role: role,
       employee: employeeJson.isEmpty ? null : Employee.fromJson(employeeJson),
       customer: customerJson.isEmpty ? null : Customer.fromJson(customerJson),
+      dealer: dealerJson.isEmpty ? null : Dealer.fromJson(dealerJson),
     );
   }
 
