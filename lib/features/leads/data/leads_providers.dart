@@ -33,7 +33,7 @@ final leadsRepositoryProvider = Provider<LeadsRepository>((ref) {
 /// The leads list screen's status tabs — "Closed" conflates CLOSED_WON and
 /// CLOSED_LOST (the backend only filters on a single status, so that split
 /// is done client-side here rather than in the repository).
-enum LeadTab { all, newLead, followUp, closed }
+enum LeadTab { all, newLead, followUp, closed, archive }
 
 /// The Leads screen's top-level segment — test rides are just another kind
 /// of lead activity, so they live as a second segment here rather than a
@@ -50,13 +50,22 @@ final leadsListProvider = FutureProvider.autoDispose<List<Lead>>((ref) async {
   final query = ref.watch(leadSearchQueryProvider);
   final all =
       await ref.watch(leadsRepositoryProvider).listLeads(query: query.isEmpty ? null : query);
+
+  // A converted lead is a customer now, not pipeline, so it leaves the working
+  // tabs entirely and lives in Archive. Keyed on the customer actually existing
+  // rather than on CLOSED_WON: a lead marked won by hand from the status
+  // dropdown never produced a customer and is still the salesperson's to chase.
+  final archived = all.where((l) => l.convertedCustomerId != null).toList();
+  final active = all.where((l) => l.convertedCustomerId == null).toList();
+
   return switch (tab) {
-    LeadTab.all => all,
-    LeadTab.newLead => all.where((l) => l.status == LeadStatus.newLead).toList(),
-    LeadTab.followUp => all.where((l) => l.status == LeadStatus.followUp).toList(),
-    LeadTab.closed => all
+    LeadTab.all => active,
+    LeadTab.newLead => active.where((l) => l.status == LeadStatus.newLead).toList(),
+    LeadTab.followUp => active.where((l) => l.status == LeadStatus.followUp).toList(),
+    LeadTab.closed => active
         .where((l) => l.status == LeadStatus.closedWon || l.status == LeadStatus.closedLost)
         .toList(),
+    LeadTab.archive => archived,
   };
 });
 

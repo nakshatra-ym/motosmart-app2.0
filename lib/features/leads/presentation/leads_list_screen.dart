@@ -125,6 +125,12 @@ class _LeadsListScreenState extends ConsumerState<LeadsListScreen> {
                           selected: selectedTab == LeadTab.closed,
                           onSelected: () => ref.read(leadTabProvider.notifier).state = LeadTab.closed,
                         ),
+                        _TabChip(
+                          label: 'Archive',
+                          selected: selectedTab == LeadTab.archive,
+                          onSelected: () =>
+                              ref.read(leadTabProvider.notifier).state = LeadTab.archive,
+                        ),
                       ],
                     ),
                   ),
@@ -136,11 +142,21 @@ class _LeadsListScreenState extends ConsumerState<LeadsListScreen> {
                     onRetry: () => ref.invalidate(leadsListProvider),
                     data: (data) {
                       if (data.isEmpty) {
-                        return const EmptyState(
-                          icon: Icons.inbox_outlined,
-                          title: 'No leads here yet',
-                          subtitle: 'New enquiries you capture will show up in this list.',
-                        );
+                        // The archive fills itself as leads convert, so pointing
+                        // at "capture an enquiry" there would be wrong advice.
+                        return selectedTab == LeadTab.archive
+                            ? const EmptyState(
+                                icon: Icons.archive_outlined,
+                                title: 'Nothing archived yet',
+                                subtitle:
+                                    'Leads move here once they become customers.',
+                              )
+                            : const EmptyState(
+                                icon: Icons.inbox_outlined,
+                                title: 'No leads here yet',
+                                subtitle:
+                                    'New enquiries you capture will show up in this list.',
+                              );
                       }
                       return RefreshIndicator(
                         color: AppColors.yamahaBlue,
