@@ -58,7 +58,7 @@ final leadsListProvider = FutureProvider.autoDispose<List<Lead>>((ref) async {
   final archived = all.where((l) => l.convertedCustomerId != null).toList();
   final active = all.where((l) => l.convertedCustomerId == null).toList();
 
-  return switch (tab) {
+  final result = switch (tab) {
     LeadTab.all => active,
     LeadTab.newLead => active.where((l) => l.status == LeadStatus.newLead).toList(),
     LeadTab.followUp => active.where((l) => l.status == LeadStatus.followUp).toList(),
@@ -67,6 +67,16 @@ final leadsListProvider = FutureProvider.autoDispose<List<Lead>>((ref) async {
         .toList(),
     LeadTab.archive => archived,
   };
+
+  // Hottest leads first so the dealer works the queue in priority order;
+  // leads the AI hasn't classified yet sort last, then most recently
+  // updated first within the same intent.
+  int rank(Lead l) => l.aiIntent?.rank ?? AiIntent.values.length;
+  return result
+    ..sort((a, b) {
+      final byIntent = rank(a).compareTo(rank(b));
+      return byIntent != 0 ? byIntent : b.updatedAt.compareTo(a.updatedAt);
+    });
 });
 
 final leadDetailProvider = FutureProvider.autoDispose.family<Lead, String>((ref, id) async {

@@ -20,6 +20,7 @@ class TicketsListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ticketsAsync = ref.watch(ticketsListProvider);
+    final view = ref.watch(ticketViewProvider);
     final store = ref.watch(mockDataStoreProvider);
     final bikeModels = ref.watch(publicModelsProvider).valueOrNull;
     final theme = Theme.of(context);
@@ -55,20 +56,52 @@ class TicketsListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Tickets')),
-      body: RefreshIndicator(
-        onRefresh: () async => ref.invalidate(ticketsListProvider),
-        child: AsyncValueWidget<List<ServiceRequest>>(
-          value: ticketsAsync,
-          onRetry: () => ref.invalidate(ticketsListProvider),
-          data: (tickets) {
-            if (tickets.isEmpty) {
-              return const EmptyState(
-                icon: Icons.confirmation_number_outlined,
-                title: 'No tickets yet',
-                subtitle: 'Service requests raised by your customers will show up here.',
-              );
-            }
-            return ListView.builder(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: SegmentedButton<TicketView>(
+              segments: const [
+                ButtonSegment(
+                  value: TicketView.active,
+                  label: Text('Active'),
+                  icon: Icon(Icons.pending_actions_outlined),
+                ),
+                ButtonSegment(
+                  value: TicketView.archived,
+                  label: Text('Archived'),
+                  icon: Icon(Icons.archive_outlined),
+                ),
+              ],
+              selected: {view},
+              onSelectionChanged: (selection) =>
+                  ref.read(ticketViewProvider.notifier).state = selection.first,
+            ),
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async => ref.invalidate(ticketsListProvider),
+              child: AsyncValueWidget<List<ServiceRequest>>(
+                value: ticketsAsync,
+                onRetry: () => ref.invalidate(ticketsListProvider),
+                data: (tickets) {
+                  if (tickets.isEmpty) {
+                    // Archived starts empty until something is resolved, so
+                    // "raise a ticket" would be the wrong prompt there.
+                    return view == TicketView.archived
+                        ? const EmptyState(
+                            icon: Icons.archive_outlined,
+                            title: 'Nothing archived yet',
+                            subtitle: 'Resolved tickets move here once closed.',
+                          )
+                        : const EmptyState(
+                            icon: Icons.confirmation_number_outlined,
+                            title: 'No open tickets',
+                            subtitle:
+                                'Service requests raised by your customers will show up here.',
+                          );
+                  }
+                  return ListView.builder(
               padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
               itemCount: tickets.length,
               itemBuilder: (context, index) {
@@ -151,10 +184,13 @@ class TicketsListScreen extends ConsumerWidget {
                     ),
                   ),
                 );
-              },
-            );
-          },
-        ),
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

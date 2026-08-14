@@ -23,18 +23,37 @@ final ticketsRepositoryProvider = Provider<TicketsRepository>((ref) {
   return ApiTicketsRepository(ref.watch(apiClientProvider));
 });
 
+/// The tickets screen's two-way split: resolved tickets move out of the
+/// working queue entirely once closed, rather than sitting in the same list.
+enum TicketView { active, archived }
+
+final ticketViewProvider = StateProvider<TicketView>((ref) => TicketView.active);
+
 final ticketsListProvider = FutureProvider.autoDispose<List<ServiceRequest>>((ref) async {
+  final view = ref.watch(ticketViewProvider);
   final tickets = await ref.watch(ticketsRepositoryProvider).listTickets();
 
-  // Work the dangerous ones first: AI priority decides the order, newest first
-  // within a priority. Untriaged tickets sort as if Normal so they never sink
-  // below routine work.
-  int rank(ServiceRequest t) => (t.aiPriority ?? TicketPriority.normal).rank;
+  if (view == TicketView.archived) {
+    final archived = tickets.where((t) => t.status == ServiceRequestStatus.resolved).toList();
+    return archived
+      ..sort((a, b) => (b.resolvedAt ?? b.createdAt).compareTo(a.resolvedAt ?? a.createdAt));
+  }
 
-  return [...tickets]..sort((a, b) {
-    final byPriority = rank(a).compareTo(rank(b));
-    return byPriority != 0 ? byPriority : b.createdAt.compareTo(a.createdAt);
-  });
+  final active = tickets.where((t) => t.status != ServiceRequestStatus.resolved).toList();
+
+  // In-progress tickets surface before untouched open ones; AI priority
+  // (newest first within a priority) breaks ties inside each status group.
+  // Untriaged tickets sort as if Normal so they never sink below routine work.
+  int statusRank(ServiceRequest t) => t.status == ServiceRequestStatus.inProgress ? 0 : 1;
+  int priorityRank(ServiceRequest t) => (t.aiPriority ?? TicketPriority.normal).rank;
+
+  return active
+    ..sort((a, b) {
+      final byStatus = statusRank(a).compareTo(statusRank(b));
+      if (byStatus != 0) return byStatus;
+      final byPriority = priorityRank(a).compareTo(priorityRank(b));
+      return byPriority != 0 ? byPriority : b.createdAt.compareTo(a.createdAt);
+    });
 });
 
 final ticketDetailProvider =

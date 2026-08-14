@@ -62,6 +62,13 @@ enum AiIntent {
       return null;
     }
   }
+
+  /// Sort key so the dealer queue works the hottest leads first.
+  int get rank => switch (this) {
+        AiIntent.hot => 0,
+        AiIntent.warm => 1,
+        AiIntent.cold => 2,
+      };
 }
 
 enum StockStatus {
