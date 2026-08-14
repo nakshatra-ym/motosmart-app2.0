@@ -82,7 +82,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Drop your work email or mobile — we’ll beam an OTP.',
+                                'Enter your email or mobile number and we’ll send you a code.',
                                 style: theme.textTheme.bodyMedium,
                               ),
                               const SizedBox(height: 22),
@@ -92,7 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 textInputAction: TextInputAction.done,
                                 style: const TextStyle(color: AppColors.ink),
                                 decoration: const InputDecoration(
-                                  labelText: 'Work email or mobile number',
+                                  labelText: 'Email or mobile number',
                                   prefixIcon: Icon(Icons.alternate_email_rounded),
                                 ),
                                 validator: (value) {

@@ -23,7 +23,7 @@ Widget buildTestApp() {
 /// From the public catalog (the app's home route), taps through to the
 /// login + OTP screens and signs in as [identifier].
 Future<void> signInAsDealer(WidgetTester tester, String identifier) async {
-  await tester.tap(find.text('Dealer login'));
+  await tester.tap(find.text('Sign in'));
   await tester.pumpAndSettle();
 
   await tester.enterText(find.byType(TextFormField).last, identifier);
@@ -41,7 +41,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Yamaha Bikes'), findsOneWidget);
-    expect(find.text('Dealer login'), findsOneWidget);
+    expect(find.text('Sign in'), findsOneWidget);
     expect(find.text('YZF-R15 V4 M'), findsOneWidget);
   });
 

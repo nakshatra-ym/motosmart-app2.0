@@ -50,8 +50,10 @@ class PublicCatalogScreen extends ConsumerWidget {
                       ),
                     ),
                     TextButton(
+                      // One sign-in for both roles — the token decides where you
+                      // land, so naming a role here turns customers away.
                       onPressed: () => context.push('/login'),
-                      child: const Text('Dealer login'),
+                      child: const Text('Sign in'),
                     ),
                   ],
                 ),
