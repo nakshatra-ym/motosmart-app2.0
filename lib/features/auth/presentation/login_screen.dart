@@ -82,7 +82,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Enter your email or mobile number and we’ll send you a code.',
+                                'We’ll email you a code to sign in — no password needed.',
                                 style: theme.textTheme.bodyMedium,
                               ),
                               const SizedBox(height: 22),
@@ -92,12 +92,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 textInputAction: TextInputAction.done,
                                 style: const TextStyle(color: AppColors.ink),
                                 decoration: const InputDecoration(
-                                  labelText: 'Email or mobile number',
+                                  labelText: 'Email address',
                                   prefixIcon: Icon(Icons.alternate_email_rounded),
                                 ),
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return 'Enter your email or mobile number';
+                                  final id = value?.trim() ?? '';
+                                  if (id.isEmpty) return 'Enter your email address';
+                                  // Caught here rather than at Cognito, which
+                                  // answers a phone number with a challenge the
+                                  // app cannot complete instead of an error.
+                                  if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+                                      .hasMatch(id)) {
+                                    return 'Enter a valid email address';
                                   }
                                   return null;
                                 },

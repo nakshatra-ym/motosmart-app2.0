@@ -105,16 +105,20 @@ void main() {
     expect(adapter.captured!.uri.host, contains('cognito-idp'));
   });
 
-  test('a phone identifier asks for the SMS challenge instead', () async {
+  test('every identifier asks for EMAIL_OTP, the pool\'s only factor', () async {
+    // Asking for SMS_OTP does not fail loudly: the pool answers
+    // SELECT_CHALLENGE with AvailableChallenges ['EMAIL_OTP'], and a code
+    // submitted against that session goes nowhere. Requesting the factor that
+    // exists keeps the dead end unreachable.
     final adapter = _CapturingAdapter(
       status: 200,
-      body: jsonEncode({'ChallengeName': 'SMS_OTP', 'Session': 's'}),
+      body: jsonEncode({'ChallengeName': 'EMAIL_OTP', 'Session': 's'}),
     );
 
     await _repoWith(adapter).requestOtp('+919999900201');
 
     final decoded = jsonDecode(adapter.capturedBody!) as Map<String, dynamic>;
-    expect((decoded['AuthParameters'] as Map)['PREFERRED_CHALLENGE'], 'SMS_OTP');
+    expect((decoded['AuthParameters'] as Map)['PREFERRED_CHALLENGE'], 'EMAIL_OTP');
   });
 
   test('Cognito errors are surfaced, not swallowed into a generic message',

@@ -17,7 +17,7 @@ class MockAuthRepository implements AuthRepository {
   final MockDataStore _store;
   final TokenStorage _tokenStorage;
 
-  static const _notFoundMessage = 'No account found for that email or phone number.';
+  static const _notFoundMessage = 'No account found for that email.';
 
   @override
   Future<void> requestOtp(String identifier) async {

@@ -92,7 +92,7 @@ class ApiAuthRepository implements AuthRepository {
   Future<void> requestOtp(String identifier) async {
     final id = identifier.trim();
     if (id.isEmpty) {
-      throw const ApiException('Enter your email or phone number.');
+      throw const ApiException('Enter your email address.');
     }
 
     if (_usesDevShortcut(id)) {
@@ -199,7 +199,7 @@ class ApiAuthRepository implements AuthRepository {
     } on ApiException catch (error) {
       if (error.statusCode == 403 || error.statusCode == 404) {
         throw const ApiException(
-          'No account found for that email or phone number.',
+          'No account found for that email.',
           statusCode: 404,
         );
       }
@@ -214,10 +214,14 @@ class ApiAuthRepository implements AuthRepository {
     }
   }
 
-  /// Cognito routes an email identifier to EMAIL_OTP and anything else (a phone
-  /// number) to SMS_OTP.
-  String _challengeFor(String identifier) =>
-      identifier.contains('@') ? 'EMAIL_OTP' : 'SMS_OTP';
+  /// Always EMAIL_OTP: the pool offers no other factor.
+  ///
+  /// Asking for SMS_OTP does not fail loudly — Cognito answers SELECT_CHALLENGE
+  /// with `AvailableChallenges: ['EMAIL_OTP']`, and submitting a code against
+  /// that session goes nowhere. Enabling SMS would take an SMS sign-in factor on
+  /// the pool plus SNS production access and, for Indian numbers, DLT
+  /// registration; until then the sign-in form asks for an email only.
+  String _challengeFor(String identifier) => 'EMAIL_OTP';
 
   Future<Map<String, dynamic>> _cognitoCall(
     String action,
@@ -274,7 +278,7 @@ class ApiAuthRepository implements AuthRepository {
     final message = asString(data['message']);
 
     if (type.contains('UserNotFound')) {
-      return 'No account found for that email or phone number.';
+      return 'No account found for that email.';
     }
     if (type.contains('NotAuthorized')) {
       return 'That code was not accepted. Request a new one and try again.';
