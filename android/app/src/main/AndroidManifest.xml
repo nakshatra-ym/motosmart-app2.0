@@ -43,6 +43,11 @@
     <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
 
+    <!-- Voice notes: records audio for /ai/transcribe (lead notes, follow-up
+         next action/outcome). Recording itself requests this at runtime; the
+         manifest entry is what allows that request to succeed. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
          https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.

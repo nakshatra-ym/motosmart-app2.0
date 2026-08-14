@@ -45,6 +45,24 @@ class ApiClient {
     return _asObject(response.data, path);
   }
 
+  /// For endpoints that take a file upload (e.g. audio for transcription)
+  /// rather than a JSON body. [receiveTimeout] overrides the shared client's
+  /// default when a route is known to run as a slower batch job.
+  Future<Map<String, dynamic>> postMultipart(
+    String path, {
+    required FormData formData,
+    Duration? receiveTimeout,
+  }) async {
+    final response = await _send(
+      () => _dio.post(
+        path,
+        data: formData,
+        options: receiveTimeout == null ? null : Options(receiveTimeout: receiveTimeout),
+      ),
+    );
+    return _asObject(response.data, path);
+  }
+
   /// For endpoints whose body is irrelevant (e.g. mark-as-read).
   Future<void> patchVoid(String path, {Object? body}) async {
     await _send(() => _dio.patch(path, data: body));

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../core/config/theme.dart';
 import '../../../core/widgets/async_value_widget.dart';
 import '../../../core/widgets/empty_state.dart';
+import '../../../core/widgets/mic_record_button.dart';
 import '../../../core/widgets/intent_badge.dart';
 import '../../../core/widgets/status_chip.dart';
 import '../../../models/enums.dart';
@@ -110,11 +111,19 @@ class _LeadDetailBody extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Mark follow-up as done'),
-        content: TextField(
-          controller: outcomeController,
-          decoration: const InputDecoration(labelText: 'Outcome note (optional)'),
-          maxLines: 3,
-          autofocus: true,
+        content: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: outcomeController,
+                decoration: const InputDecoration(labelText: 'Outcome note (optional)'),
+                maxLines: 3,
+                autofocus: true,
+              ),
+            ),
+            MicRecordButton(controller: outcomeController),
+          ],
         ),
         actions: [
           TextButton(onPressed: () => context.pop(false), child: const Text('Cancel')),
@@ -403,11 +412,19 @@ class _FollowupFormSheetState extends State<_FollowupFormSheet> {
         children: [
           Text('Add follow-up', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 16),
-          TextField(
-            controller: _controller,
-            decoration: const InputDecoration(labelText: 'Next action'),
-            autofocus: true,
-            maxLines: 2,
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  decoration: const InputDecoration(labelText: 'Next action'),
+                  autofocus: true,
+                  maxLines: 2,
+                ),
+              ),
+              MicRecordButton(controller: _controller),
+            ],
           ),
           const SizedBox(height: 12),
           InkWell(

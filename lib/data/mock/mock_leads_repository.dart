@@ -238,4 +238,12 @@ class MockLeadsRepository implements LeadsRepository {
     await _simulateLatency();
     return _store.leads.any((l) => l.mobile == mobile && l.id != excludingLeadId);
   }
+
+  @override
+  Future<String> transcribeAudio(String audioFilePath) async {
+    // Offline mode has no Bedrock to call — stands in for the real batch
+    // job's delay so the mic button's "Transcribing…" state is demoable.
+    await Future.delayed(const Duration(seconds: 2));
+    return 'Customer wants a test ride this weekend, follow up by phone.';
+  }
 }

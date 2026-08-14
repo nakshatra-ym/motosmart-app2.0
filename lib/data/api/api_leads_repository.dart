@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import '../../core/network/api_client.dart';
 import '../../features/leads/data/leads_repository.dart';
 import '../../models/bike_model.dart';
@@ -174,5 +176,20 @@ class ApiLeadsRepository implements LeadsRepository {
       if (excludingLeadId != null && row['id'] == excludingLeadId) return false;
       return asString(row['mobile']).contains(mobile.trim());
     });
+  }
+
+  @override
+  Future<String> transcribeAudio(String audioFilePath) async {
+    final formData = FormData.fromMap({
+      'audio': await MultipartFile.fromFile(audioFilePath),
+    });
+    final response = await _api.postMultipart(
+      '/ai/transcribe',
+      formData: formData,
+      // This runs as a batch job rather than replying in real time, so it
+      // legitimately takes longer than the shared client's 45s default.
+      receiveTimeout: const Duration(seconds: 60),
+    );
+    return asString(response['text']);
   }
 }

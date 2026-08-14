@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/widgets/async_value_widget.dart';
+import '../../../core/widgets/mic_record_button.dart';
 import '../../../models/bike_model.dart';
 import '../../../models/enums.dart';
 import '../data/leads_providers.dart';
@@ -186,10 +187,18 @@ class _NewLeadScreenState extends ConsumerState<NewLeadScreen> {
                 ),
               ),
               const SizedBox(height: 14),
-              TextFormField(
-                controller: _notesController,
-                decoration: const InputDecoration(labelText: 'Notes'),
-                maxLines: 3,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _notesController,
+                      decoration: const InputDecoration(labelText: 'Notes'),
+                      maxLines: 3,
+                    ),
+                  ),
+                  MicRecordButton(controller: _notesController),
+                ],
               ),
               const SizedBox(height: 8),
               SwitchListTile(

@@ -67,4 +67,9 @@ abstract class LeadsRepository {
 
   /// Duplicate-mobile warning (Phase 4 good-to-have, cheap to support now).
   Future<bool> hasDuplicateMobile(String mobile, {String? excludingLeadId});
+
+  /// `POST /ai/transcribe` — sends the recorded voice note at [audioFilePath]
+  /// and returns the transcribed text for the dealer to review before saving.
+  /// Backs the mic button on notes / next action / outcome note fields.
+  Future<String> transcribeAudio(String audioFilePath);
 }
