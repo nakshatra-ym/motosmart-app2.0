@@ -36,7 +36,12 @@ abstract class LeadsRepository {
 
   /// `POST /leads/{id}/convert` — creates a customer record, marks the lead
   /// CLOSED_WON.
-  Future<LeadConversion> convertLead(String id, {required String email});
+  Future<LeadConversion> convertLead(
+    String id, {
+    required String email,
+    String? registrationNo,
+    String? bikeModelId,
+  });
 
   Future<List<LeadFollowup>> listFollowups(String leadId);
 

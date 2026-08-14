@@ -124,7 +124,12 @@ class MockLeadsRepository implements LeadsRepository {
   }
 
   @override
-  Future<LeadConversion> convertLead(String id, {required String email}) async {
+  Future<LeadConversion> convertLead(
+    String id, {
+    required String email,
+    String? registrationNo,
+    String? bikeModelId,
+  }) async {
     await _simulateLatency();
     final index = _store.leads.indexWhere((l) => l.id == id);
     if (index == -1) throw const ApiException('Lead not found.', statusCode: 404);

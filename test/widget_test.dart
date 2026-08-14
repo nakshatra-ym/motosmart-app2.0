@@ -27,7 +27,7 @@ Future<void> signInAsDealer(WidgetTester tester, String identifier) async {
   await tester.pumpAndSettle();
 
   await tester.enterText(find.byType(TextFormField).last, identifier);
-  await tester.tap(find.text('Send OTP'));
+  await tester.tap(find.text('Continue with OTP'));
   await tester.pumpAndSettle();
 
   await tester.enterText(find.byType(TextFormField).last, '123456');
@@ -88,7 +88,7 @@ void main() {
     await tester.pumpWidget(buildTestApp());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Book test ride'));
+    await tester.tap(find.text('Test ride').first);
     await tester.pumpAndSettle();
 
     expect(find.text('Book a test ride'), findsOneWidget);

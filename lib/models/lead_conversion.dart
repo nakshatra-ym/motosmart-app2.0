@@ -13,16 +13,22 @@ class LeadConversion {
     required this.customer,
     required this.invited,
     this.inviteError,
+    this.vehicleId,
   });
 
   final Customer customer;
   final bool invited;
   final String? inviteError;
 
+  /// The bike put in their garage. Null when neither the lead nor the dealer
+  /// named a model, which leaves the customer with nothing to service or pair.
+  final String? vehicleId;
+
   factory LeadConversion.fromJson(Map<String, dynamic> json, Customer customer) =>
       LeadConversion(
         customer: customer,
         invited: json['invited'] as bool? ?? false,
         inviteError: json['invite_error'] as String?,
+        vehicleId: json['vehicle_id'] as String?,
       );
 }

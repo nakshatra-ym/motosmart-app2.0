@@ -88,10 +88,20 @@ class ApiLeadsRepository implements LeadsRepository {
   }
 
   @override
-  Future<LeadConversion> convertLead(String id, {required String email}) async {
+  Future<LeadConversion> convertLead(
+    String id, {
+    required String email,
+    String? registrationNo,
+    String? bikeModelId,
+  }) async {
     final response = await _api.post(
       '/leads/$id/convert',
-      body: {if (email.isNotEmpty) 'email': email},
+      body: {
+        if (email.isNotEmpty) 'email': email,
+        if (registrationNo != null && registrationNo.isNotEmpty)
+          'registration_no': registrationNo,
+        if (bikeModelId != null) 'bike_model_id': bikeModelId,
+      },
     );
     return LeadConversion.fromJson(
       response,

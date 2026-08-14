@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../models/chat_message.dart';
 import '../../../models/enums.dart';
 import '../../config/theme.dart';
+import 'markdown_text.dart';
 
 /// Chat bubble with entrance motion and role-aware styling.
 class AiMessageBubble extends StatelessWidget {
@@ -84,15 +85,28 @@ class AiMessageBubble extends StatelessWidget {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-                  child: SelectableText(
-                    message.content,
-                    style: TextStyle(
-                      color: _isUser ? Colors.white : AppColors.ink,
-                      fontSize: 15,
-                      height: 1.45,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
+                  // The assistant answers in Markdown; the rider's own message is
+                  // whatever they typed and is never parsed as one.
+                  child: _isUser
+                      ? SelectableText(
+                          message.content,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            height: 1.45,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        )
+                      : MarkdownText(
+                          message.content,
+                          style: const TextStyle(
+                            color: AppColors.ink,
+                            fontSize: 15,
+                            height: 1.45,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          codeBackground: const Color(0x1FFFFFFF),
+                        ),
                 ),
               ),
               const SizedBox(height: 4),
